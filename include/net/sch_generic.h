@@ -220,6 +220,8 @@ struct tcf_proto {
 struct qdisc_skb_cb {
 	unsigned int		pkt_len;
 	long			data[];
+	u16			bond_queue_mapping;
+	u16			_pad;
 };
 
 static inline int qdisc_qlen(struct Qdisc *q)
