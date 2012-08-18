@@ -146,7 +146,7 @@ static unsigned int get_nr_run_avg(void)
 #define DEF_SAMPLING_DOWN_FACTOR		(2)
 #define MAX_SAMPLING_DOWN_FACTOR		(100000)
 #define DEF_FREQUENCY_DOWN_DIFFERENTIAL		(5)
-#define DEF_FREQUENCY_UP_THRESHOLD		(80)
+#define DEF_FREQUENCY_UP_THRESHOLD		(85)
 #define DEF_FREQUENCY_MIN_SAMPLE_RATE		(10000)
 #define MIN_FREQUENCY_UP_THRESHOLD		(11)
 #define MAX_FREQUENCY_UP_THRESHOLD		(100)
@@ -156,6 +156,8 @@ static unsigned int get_nr_run_avg(void)
 
 #define DEF_MAX_CPU_LOCK			(0)
 #define DEF_MIN_CPU_LOCK			(0)
+#define DEF_CPU_UP_FREQ				(500000)
+#define DEF_CPU_DOWN_FREQ			(200000)
 #define DEF_UP_NR_CPUS				(1)
 #define DEF_CPU_UP_RATE				(10)
 #define DEF_CPU_DOWN_RATE			(20)
@@ -175,7 +177,7 @@ static int hotplug_rq[4][2] = {
 
 static int hotplug_freq[4][2] = {
 	{0, 500000},
-	{400000, 500000},
+	{300000, 500000},
 	{400000, 800000},
 	{600000, 0}
 };
