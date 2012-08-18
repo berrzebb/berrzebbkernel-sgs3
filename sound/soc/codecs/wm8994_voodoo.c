@@ -430,7 +430,7 @@ void update_recording_preset(bool with_mute)
 		// On Galaxy S: IN1L_VOL1=11000 (+19.5 dB)
 		// On Nexus S: variable value
 		wm8994_write(codec, WM8994_LEFT_LINE_INPUT_1_2_VOLUME,
-			     WM8994_IN1L_VU | origin_recgain);
+			     /*WM8994_IN1L_VU |*/ origin_recgain);
 		wm8994_write(codec, WM8994_INPUT_MIXER_3, origin_recgain_mixer);
 		// DRC disabled
 		wm8994_write(codec, WM8994_AIF1_DRC1_1, 0x0080);
