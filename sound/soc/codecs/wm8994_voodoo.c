@@ -635,7 +635,7 @@ bool is_path(int unified_path)
 	return false;
 }
 
-bool is_mic_active()
+bool is_mic_active(void)
 {
 	int count = 0;
 	struct snd_soc_dapm_widget *w;

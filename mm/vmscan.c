@@ -1552,20 +1552,20 @@ shrink_inactive_list(unsigned long nr_to_scan, struct zone *zone,
 
 	set_reclaim_mode(priority, sc, false);
 	if (sc->reclaim_mode & RECLAIM_MODE_LUMPYRECLAIM)
-		reclaim_mode |= ISOLATE_ACTIVE;
+		sc->reclaim_mode |= ISOLATE_ACTIVE;
 
 	lru_add_drain();
 
 	if (!sc->may_unmap)
-		reclaim_mode |= ISOLATE_UNMAPPED;
+		sc->reclaim_mode |= ISOLATE_UNMAPPED;
 	if (!sc->may_writepage)
-		reclaim_mode |= ISOLATE_CLEAN;
+		sc->reclaim_mode |= ISOLATE_CLEAN;
 
 	spin_lock_irq(&zone->lru_lock);
 
 	if (scanning_global_lru(sc)) {
 		nr_taken = isolate_pages_global(nr_to_scan, &page_list,
-			&nr_scanned, sc->order, reclaim_mode, zone, 0, file);
+			&nr_scanned, sc->order, sc->reclaim_mode, zone, 0, file);
 		zone->pages_scanned += nr_scanned;
 		if (current_is_kswapd())
 			__count_zone_vm_events(PGSCAN_KSWAPD, zone,
@@ -1575,7 +1575,7 @@ shrink_inactive_list(unsigned long nr_to_scan, struct zone *zone,
 					       nr_scanned);
 	} else {
 		nr_taken = mem_cgroup_isolate_pages(nr_to_scan, &page_list,
-			&nr_scanned, sc->order, reclaim_mode, zone,
+			&nr_scanned, sc->order, sc->reclaim_mode, zone,
 			sc->mem_cgroup, 0, file);
 		/*
 		 * mem_cgroup_isolate_pages() keeps track of
