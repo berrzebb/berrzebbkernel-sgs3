@@ -21,6 +21,7 @@
 #define TI_TP_VALUE 96 /* offsetof(struct thread_info, tp_value)	@ */
 #define TI_FPSTATE 288 /* offsetof(struct thread_info, fpstate)	@ */
 #define TI_VFPSTATE 432 /* offsetof(struct thread_info, vfpstate)	@ */
+#define TI_THUMBEE_STATE 712 /* offsetof(struct thread_info, thumbee_state)	@ */
 
 #define S_R0 0 /* offsetof(struct pt_regs, ARM_r0)	@ */
 #define S_R1 4 /* offsetof(struct pt_regs, ARM_r1)	@ */
@@ -42,7 +43,7 @@
 #define S_OLD_R0 68 /* offsetof(struct pt_regs, ARM_ORIG_r0)	@ */
 #define S_FRAME_SIZE 72 /* sizeof(struct pt_regs)	@ */
 
-#define MM_CONTEXT_ID 376 /* offsetof(struct mm_struct, context.id)	@ */
+#define MM_CONTEXT_ID 352 /* offsetof(struct mm_struct, context.id)	@ */
 
 #define VMA_VM_MM 0 /* offsetof(struct vm_area_struct, vm_mm)	@ */
 #define VMA_VM_FLAGS 24 /* offsetof(struct vm_area_struct, vm_flags)	@ */

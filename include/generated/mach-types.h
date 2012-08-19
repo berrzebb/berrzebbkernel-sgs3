@@ -14235,9 +14235,9 @@ extern unsigned int __machine_arch_type;
 # else
 #  define machine_arch_type	MACH_TYPE_SMDK4412
 # endif
-# define machine_is_smdk4412()	(machine_arch_type == MACH_TYPE_SMDK4412)
+# define machine_is_smdk4x12()	(machine_arch_type == MACH_TYPE_SMDK4412)
 #else
-# define machine_is_smdk4412()	(0)
+# define machine_is_smdk4x12()	(0)
 #endif
 
 #ifdef CONFIG_MACH_SLP_PQ
