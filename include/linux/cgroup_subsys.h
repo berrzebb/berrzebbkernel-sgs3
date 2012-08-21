@@ -62,14 +62,6 @@ SUBSYS(blkio)
 #ifdef CONFIG_CGROUP_PERF
 SUBSYS(perf)
 #endif
-
-/* */
-<<<<<<< HEAD
-
-#ifdef CONFIG_CGROUP_BFQIO
-SUBSYS(bfqio)
-#endif
-
 /* */
 
 #ifdef CONFIG_CGROUP_TIMER_SLACK
@@ -78,5 +70,8 @@ SUBSYS(timer_slack)
 
 /* */
 
-=======
->>>>>>> parent of 13bb45b... Add BFQ I/O scheduler v4, make it the default.
+#ifdef CONFIG_CGROUP_BFQIO
+SUBSYS(bfqio)
+#endif
+
+/* */
