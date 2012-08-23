@@ -123,6 +123,13 @@ int step3_down = 90;
 #endif
 #endif
 
+mali_dvfs_table mali_dvfs_all[MAX_MALI_DVFS_STEPS]={
+	{160   ,1000000   ,  875000},
+	{266   ,1000000   ,  900000},
+	{350   ,1000000   ,  950000},
+	{440   ,1000000   , 1025000},
+	{533   ,1000000   , 1075000} };
+
 mali_dvfs_table mali_dvfs[MALI_DVFS_STEPS]={
 	{160   ,1000000   , 875000},
 #if (MALI_DVFS_STEPS > 1)
@@ -355,6 +362,7 @@ static mali_bool mali_dvfs_table_update(void)
 static unsigned int decideNextStatus(unsigned int utilization)
 {
 	static unsigned int level = 0; // 0:stay, 1:up
+	static int mali_dvfs_clk = 0;
 
 	if (mali_runtime_resumed >= 0) {
 		level = mali_runtime_resumed;
