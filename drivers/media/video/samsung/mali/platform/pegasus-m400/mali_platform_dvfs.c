@@ -260,7 +260,7 @@ mali_bool set_mali_dvfs_current_step(unsigned int step)
 static mali_bool set_mali_dvfs_status(u32 step,mali_bool boostup)
 {
 	u32 validatedStep=step;
-
+	int err;
 #ifdef CONFIG_REGULATOR
 	if (mali_regulator_get_usecount() == 0) {
 		MALI_DEBUG_PRINT(1, ("regulator use_count is 0 \n"));
