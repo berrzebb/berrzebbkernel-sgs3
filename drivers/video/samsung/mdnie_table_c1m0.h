@@ -587,7 +587,7 @@ static const unsigned short tune_warm_outdoor[] = {
 	0x00ff, 0x0000, /*Mask Release*/
 	END_SEQ, 0x0000,
 };
-
+#if !defined(CONFIG_FB_MDNIE_CYANOGEN)
 static const unsigned short tune_cyanogenmod[] = {
 	0x0000, 0x0000, /*BANK 0*/
 	0x0008, 0x000c, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
@@ -607,6 +607,8 @@ static const unsigned short tune_cyanogenmod[] = {
 	0x00ff, 0x0000, /*Mask Release*/
 	END_SEQ, 0x0000,
 };
+#endif
+
 struct mdnie_tunning_info etc_table[CABC_MAX][OUTDOOR_MAX][TONE_MAX] = {
 	{
 		{
@@ -633,7 +635,9 @@ struct mdnie_tunning_info tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MAX] = {
 			{"DYNAMIC_UI",			tune_dynamic_ui},
 			{"DYNAMIC_GALLERY",		tune_dynamic_gallery},
 			{"DYNAMIC_VT",			tune_dynamic_vtcall},
+#if !defined(CONFIG_FB_MDNIE_CYANOGEN)
 			{"CYANOGENMOD",		tune_cyanogenmod},
+#endif
 		}, {
 			{"STANDARD_UI",			tune_standard_ui},
 			{"STANDARD_VIDEO_NORMAL",	tune_standard_video},
@@ -643,7 +647,9 @@ struct mdnie_tunning_info tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MAX] = {
 			{"STANDARD_UI",			tune_standard_ui},
 			{"STANDARD_GALLERY",		tune_standard_gallery},
 			{"STANDARD_VT",			tune_standard_vtcall},
+#if !defined(CONFIG_FB_MDNIE_CYANOGEN)
 			{"CYANOGENMOD",		tune_cyanogenmod},
+#endif
 		}, {
 			{"NATURAL_UI",			tune_natural_ui},
 			{"NATURAL_VIDEO_NORMAL",	tune_natural_video},
@@ -653,7 +659,9 @@ struct mdnie_tunning_info tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MAX] = {
 			{"NATURAL_UI",			tune_natural_ui},
 			{"NATURAL_GALLERY",		tune_natural_gallery},
 			{"NATURAL_VT",			tune_natural_vtcall},
+#if !defined(CONFIG_FB_MDNIE_CYANOGEN)
 			{"CYANOGENMOD",		tune_cyanogenmod},
+#endif
 		}, {
 			{"MOVIE_UI",			tune_movie_ui},
 			{"MOVIE_VIDEO_NORMAL",		tune_movie_video},
@@ -663,7 +671,9 @@ struct mdnie_tunning_info tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MAX] = {
 			{"MOVIE_UI",			tune_movie_ui},
 			{"MOVIE_GALLERY",		tune_movie_gallery},
 			{"MOVIE_VT",			tune_movie_vtcall},
+#if !defined(CONFIG_FB_MDNIE_CYANOGEN)
 			{"CYANOGENMOD",		tune_cyanogenmod},
+#endif
 		},
 	}
 };
