@@ -96,6 +96,10 @@ static spinlock_t gestures_lock;
 #endif
 #include <linux/fb.h>
 #endif
+#ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_FLEXRATE
+#include <mach/midas-tsp.h>
+#endif
+
 
 bool touch_booster_enabled = true;
 module_param(touch_booster_enabled, bool, 0775);
@@ -1166,7 +1170,12 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 if (touch_booster_enabled)
 	set_dvfs_lock(info, !!touch_is_pressed);
 #endif
-
+#ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_FLEXRATE
+	if(!!touch_is_pressed){
+		midas_tsp_request_qos();
+	}
+#endif
++
 out:
 	return IRQ_HANDLED;
 }
