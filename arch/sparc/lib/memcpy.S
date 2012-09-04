@@ -1145,3 +1145,4 @@ FUNC(memcpy)	/* %o0=dst %o1=src %o2=len */
 1:
 	b		81b
 	 mov		%o2, %g1
+
