@@ -846,7 +846,7 @@ int melfas_power(int on)
 	if (IS_ERR(regulator))
 		return PTR_ERR(regulator);
 
-	pr_debug("[TSP] %s %s\n", __func__, on ? "on" : "off");
+	printk(KERN_DEBUG "[TSP] %s %s\n", __func__, on ? "on" : "off");
 
 	if (on) {
 		/* Analog-Panel Power */
@@ -1075,7 +1075,11 @@ void __init midas_tsp_init(void)
 #ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_FLEXRATE
 static void flexrate_work(struct work_struct *work)
 {
+<<<<<<< HEAD
 	cpufreq_ondemand_flexrate_request(12500, 4);
+=======
+	cpufreq_ondemand_flexrate_request(10000, 10);
+>>>>>>> parent of 1c7f2ac... midas-tsp: Remove void pointer from qos request
 }
 
 #include <linux/pm_qos_params.h>
@@ -1088,7 +1092,7 @@ static void flexrate_qos_cancel(struct work_struct *work)
 static DECLARE_WORK(flex_work, flexrate_work);
 static DECLARE_DELAYED_WORK(busqos_work, flexrate_qos_cancel);
 
-void midas_tsp_request_qos(void)
+void midas_tsp_request_qos(void *data)
 {
 	if (!work_pending(&flex_work))
 		schedule_work_on(0, &flex_work);
@@ -1103,6 +1107,6 @@ void midas_tsp_request_qos(void)
 	}
 
 	/* Cancel the QoS request after 1/10 sec */
-	schedule_delayed_work_on(0, &busqos_work, HZ / 7);
+	schedule_delayed_work_on(0, &busqos_work, HZ / 5);
 }
 #endif
