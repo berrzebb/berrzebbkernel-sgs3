@@ -3,7 +3,8 @@ export KERNELDIR=`readlink -f .`
 export RAMFS_SOURCE=`readlink -f $KERNELDIR/../ramfs`
 export PARENT_DIR=`readlink -f ..`
 export USE_SEC_FIPS_MODE=true
-CROSS_COMPILE=$PARENT_DIR/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
+export DROPBOX_DIR=`readlink -f ../../Dropbox/`
+export CROSS_COMPILE=$PARENT_DIR/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
 
 if [ "${1}" != "" ];then
 export KERNELDIR=`readlink -f ${1}`
@@ -46,5 +47,7 @@ nice -n 10 make -j3 zImage || exit 1
 
 $KERNELDIR/mkshbootimg.py $KERNELDIR/boot.img $KERNELDIR/boot.img.pre $KERNELDIR/payload.tar
 rm -f $KERNELDIR/boot.img.pre
+rm -f $DROPBOXDIR/boot.tar
 rm -f $KERNELDIR/boot.tar
 tar cvf boot.tar boot.img
+cp boot.tar $DROPBOXDIR/boot.tar
