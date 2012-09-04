@@ -1076,10 +1076,14 @@ void __init midas_tsp_init(void)
 static void flexrate_work(struct work_struct *work)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	cpufreq_ondemand_flexrate_request(12500, 4);
 =======
 	cpufreq_ondemand_flexrate_request(10000, 10);
 >>>>>>> parent of 1c7f2ac... midas-tsp: Remove void pointer from qos request
+=======
+	cpufreq_ondemand_flexrate_request(15000, 5);
+>>>>>>> parent of 989122f... midas-tsp: Adjust flexrate request params
 }
 
 #include <linux/pm_qos_params.h>
