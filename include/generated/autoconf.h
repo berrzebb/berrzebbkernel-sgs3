@@ -1,6 +1,6 @@
 /*
  * Automatically generated C config: don't edit
- * Linux/arm 3.0.41 Kernel Configuration
+ * Linux/arm 3.0.42 Kernel Configuration
  */
 #define CONFIG_RING_BUFFER 1
 #define CONFIG_NF_CONNTRACK_H323 1
@@ -1028,7 +1028,7 @@
 #define CONFIG_S5P_GPIO_INT 1
 #define CONFIG_TDMB 1
 #define CONFIG_I2C_CHARDEV 1
-#define CONFIG_CROSS_COMPILE "/home/berrzebb/android/toolchain/arm-eabi-4.4.3/bin/arm-eabi-"
+#define CONFIG_CROSS_COMPILE "/home/berrzebb/android/toolchain/eabi-4.5.4/bin/arm-eabi-"
 #define CONFIG_S3C_DEV_I2C6 1
 #define CONFIG_USB_GADGET_SELECTED 1
 #define CONFIG_GENERIC_CLOCKEVENTS_BROADCAST 1

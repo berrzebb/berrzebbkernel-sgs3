@@ -1,1 +1,1 @@
-#define UTS_RELEASE "3.0.41-Berrzebb_SGS3_v1.4"
+#define UTS_RELEASE "3.0.42-Berrzebb_SGS3_v1.4"

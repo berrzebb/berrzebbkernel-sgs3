@@ -374,7 +374,11 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
  		   -march=armv7-a \
  		   -mfpu=neon \
 		   -funswitch-loops -fpredictive-commoning \
-      	   -fmodulo-sched -fmodulo-sched-allow-regmoves
+      	   -fmodulo-sched -fmodulo-sched-allow-regmoves \
+		   -fgraphite-identity -ftree-loop-distribution \
+		   -floop-interchange -floop-block -floop-strip-mine -ftree-loop-linear \
+		   -fgcse-after-reload \
+			-fipa-cp-clone
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
@@ -568,7 +572,7 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
-KBUILD_CFLAGS	+= -O2
+KBUILD_CFLAGS	+= -Ofast
 endif
 
 ifdef CONFIG_CC_CHECK_WARNING_STRICTLY
