@@ -9,7 +9,6 @@ export CROSS_COMPILE=$PARENT_DIR/toolchain/eabi-4.5.4/bin/arm-eabi-
 if [ "${1}" != "" ];then
 export KERNELDIR=`readlink -f ${1}`
 fi
-
 RAMFS_TMP="/tmp/ramfs-source"
 
 export ARCH=arm
