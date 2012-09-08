@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ "${1}" != "" ];then
+cp .BerrzebbConfig_$1 .config
+./build_kernel.sh
+mv boot.tar cm-boot.tar
+else
+cp .BerrzebbConfig .config
+./build_kernel.sh
+mv boot.tar normal-boot.tar
+fi
