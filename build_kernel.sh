@@ -6,9 +6,6 @@ export USE_SEC_FIPS_MODE=true
 export DROPBOX_DIR=`readlink -f ../../Dropbox/`
 export CROSS_COMPILE=$PARENT_DIR/toolchain/eabi-4.7.4/bin/arm-eabi-
 
-if [ "${1}" != "" ];then
-export KERNELDIR=`readlink -f ${1}`
-fi
 RAMFS_TMP="/tmp/ramfs-source"
 
 export ARCH=arm
