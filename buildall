@@ -1,0 +1,8 @@
+#!/bin/sh
+./build kt
+./build kt cm
+./build skt
+./build skt cm
+./build lgt
+./build lgt cm
+
