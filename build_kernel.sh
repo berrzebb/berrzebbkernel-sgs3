@@ -1,6 +1,6 @@
 #!/bin/sh
 export KERNELDIR=`readlink -f .`
-export RAMFS_SOURCE=`readlink -f $KERNELDIR/../ramfs`
+export RAMFS_SOURCE=`readlink -f $KERNELDIR/ramfs`
 export PARENT_DIR=`readlink -f ..`
 export USE_SEC_FIPS_MODE=true
 export DROPBOX_DIR=`readlink -f ../../Dropbox/`
