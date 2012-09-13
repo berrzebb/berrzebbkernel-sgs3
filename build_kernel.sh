@@ -27,7 +27,7 @@ rm -rf $RAMFS_TMP/tmp/*
 #remove mercurial repository
 rm -rf $RAMFS_TMP/.hg
 #copy modules into ramfs
-mkdir -p $INITRAMFS/lib/modules
+mkdir -p $RAMFS_TMP/lib/modules
 find -name '*.ko' -exec cp -av {} $RAMFS_TMP/lib/modules/ \;
 ${CROSS_COMPILE}strip --strip-unneeded $RAMFS_TMP/lib/modules/*
 
