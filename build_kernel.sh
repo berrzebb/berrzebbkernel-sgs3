@@ -27,7 +27,7 @@ rm -rf $RAMFS_TMP/tmp/*
 #remove mercurial repository
 rm -rf $RAMFS_TMP/.hg
 #copy modules into ramfs
-mkdir -p $INITRAMFS/lib/modules
+mkdir -p $RAMFS_TMP/lib/modules
 find -name '*.ko' -exec cp -av {} $RAMFS_TMP/lib/modules/ \;
 ${CROSS_COMPILE}strip --strip-unneeded $RAMFS_TMP/lib/modules/*
 
@@ -37,7 +37,7 @@ ls -lh $RAMFS_TMP.cpio
 gzip -9 $RAMFS_TMP.cpio
 cd -
 
-nice -n 10 make -j3 -ofast USE_CCACHE=1 zImage || exit 1
+nice -n 10 make -j3 USE_CCACHE=1 zImage || exit 1
 
 ./mkbootimg --kernel $KERNELDIR/arch/arm/boot/zImage --ramdisk $RAMFS_TMP.cpio.gz --board smdk4x12 --base 0x10000000 --pagesize 2048 --ramdiskaddr 0x11000000 -o $KERNELDIR/boot.img.pre
 
