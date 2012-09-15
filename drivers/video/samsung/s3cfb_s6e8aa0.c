@@ -281,96 +281,6 @@ read_retry:
 }
 
 #ifdef CONFIG_AID_DIMMING
-static int get_backlight_level_from_brightness(int brightness)
-{
-	int backlightlevel;
-
-	/* brightness setting from platform is from 0 to 255
-	 * But in this driver, brightness is only supported from 0 to 24 */
-
-	switch (brightness) {
-	case 0 ... 29:
-		backlightlevel = GAMMA_30CD; //GAMMA_20CD;
-		break;
-	case 30 ... 39:
-		backlightlevel = GAMMA_40CD; //GAMMA_30CD;
-		break;
-	case 40 ... 49:
-		backlightlevel = GAMMA_50CD; //GAMMA_40CD;
-		break;
-	case 50 ... 59:
-		backlightlevel = GAMMA_60CD; //GAMMA_50CD;
-		break;
-	case 60 ... 69:
-		backlightlevel = GAMMA_70CD; //GAMMA_60CD;
-		break;
-	case 70 ... 79:
-		backlightlevel = GAMMA_80CD; //GAMMA_70CD;
-		break;
-	case 80 ... 89:
-		backlightlevel = GAMMA_90CD; //GAMMA_80CD;
-		break;
-	case 90 ... 99:
-		backlightlevel = GAMMA_100CD; //GAMMA_90CD;
-		break;
-	case 100 ... 109:
-		backlightlevel = GAMMA_110CD; //GAMMA_100CD;
-		break;
-	case 110 ... 119:
-		backlightlevel = GAMMA_130CD; //GAMMA_110CD;
-		break;
-	case 120 ... 129:
-		backlightlevel = GAMMA_140CD; //GAMMA_120CD;
-		break;
-	case 130 ... 139:
-		backlightlevel = GAMMA_150CD; //GAMMA_130CD;
-		break;
-	case 140 ... 149:
-		backlightlevel = GAMMA_160CD; //GAMMA_140CD;
-		break;
-	case 150 ... 159:
-		backlightlevel = GAMMA_180CD; //GAMMA_150CD;
-		break;
-	case 160 ... 169:
-		backlightlevel = GAMMA_190CD; //GAMMA_160CD;
-		break;
-	case 170 ... 179:
-		backlightlevel = GAMMA_200CD; //GAMMA_170CD;
-		break;
-	case 180 ... 189:
-		backlightlevel = GAMMA_210CD;
-		break;
-	case 190 ... 199:
-		backlightlevel = GAMMA_220CD; //GAMMA_190CD;
-		break;
-	case 200 ... 209:
-		backlightlevel = GAMMA_230CD; //GAMMA_200CD;
-		break;
-	case 210 ... 219:
-		backlightlevel = GAMMA_240CD; //GAMMA_210CD;
-		break;
-	case 220 ... 229:
-		backlightlevel = GAMMA_240CD; //GAMMA_220CD;
-		break;
-	case 230 ... 239:
-		backlightlevel = GAMMA_250CD; //GAMMA_230CD;
-		break;
-	case 240 ... 249:
-		backlightlevel = GAMMA_250CD; //GAMMA_240CD;
-		break;
-	case 250 ... 254:
-		backlightlevel = GAMMA_300CD; //GAMMA_250CD;
-		break;
-	case 255:
-		backlightlevel = GAMMA_300CD;
-		break;
-	default:
-		backlightlevel = DEFAULT_GAMMA_LEVEL;
-		break;
-	}
-	return backlightlevel;
-}
-
 static int s6e8ax0_aid_parameter_ctl(struct lcd_info *lcd , u8 force)
 {
 	if (likely(lcd->support_aid)) {
@@ -380,30 +290,6 @@ static int s6e8ax0_aid_parameter_ctl(struct lcd_info *lcd , u8 force)
 	}
 
 	return 0;
-}
-#else
-static int get_backlight_level_from_brightness(int brightness)
-{
-	int backlightlevel;
-
-	/* brightness setting from platform is from 0 to 255
-	 * But in this driver, brightness is only supported from 0 to 24 */
-
-	switch (brightness) {
-	case 0 ... 29:
-		backlightlevel = GAMMA_30CD;
-		break;
-	case 30 ... 254:
-		backlightlevel = (brightness - candela_table[0]) / 10;
-		break;
-	case 255:
-		backlightlevel = ARRAY_SIZE(candela_table) - 1;
-		break;
-	default:
-		backlightlevel = DEFAULT_GAMMA_LEVEL;
-		break;
-	}
-	return backlightlevel;
 }
 #endif
 
