@@ -557,55 +557,77 @@ static ssize_t show_scaling_setspeed(struct cpufreq_policy *policy, char *buf)
 	return policy->governor->show_setspeed(policy, buf);
 }
 
-ssize_t (*show_vdd_levels_module)(struct cpufreq_policy *policy, char *buf) = NULL;
+extern ssize_t acpuclk_get_vdd_levels_str(char *buf);
 static ssize_t show_vdd_levels(struct cpufreq_policy *policy, char *buf)
 {
-	if( show_vdd_levels_module != NULL )
-		return (*show_vdd_levels_module)(policy, buf);
-	else return -EINVAL;
+return acpuclk_get_vdd_levels_str(buf);
 }
 
-ssize_t (*store_vdd_levels_module)(struct cpufreq_policy *policy, const char *buf, size_t count) = NULL;
+extern void acpuclk_set_vdd(unsigned acpu_khz, int vdd);
 static ssize_t store_vdd_levels(struct cpufreq_policy *policy, const char *buf, size_t count)
 {
-	if( store_vdd_levels_module != NULL )
-		return (*store_vdd_levels_module)(policy, buf, count);
-	else return -EINVAL;
+int i = 0, j;
+int pair[2] = { 0, 0 };
+int sign = 0;
+
+if (count < 1)
+return 0;
+
+if (buf[0] == '-')
+{
+sign = -1;
+i++;
+}
+else if (buf[0] == '+')
+{
+sign = 1;
+i++;
 }
 
-ssize_t (*show_UV_mV_table_module)(struct cpufreq_policy *policy, char *buf) = NULL;
-static ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf)
+for (j = 0; i < count; i++)
 {
-	if( show_UV_mV_table_module != NULL )
-		return (*show_UV_mV_table_module)(policy, buf);
-	else return -EINVAL;
+char c = buf[i];
+if ((c >= '0') && (c <= '9'))
+{
+pair[j] *= 10;
+pair[j] += (c - '0');
 }
-ssize_t (*store_UV_mV_table_module)(struct cpufreq_policy *policy,
-                                      const char *buf, size_t count) = NULL;
-static ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
-                                      const char *buf, size_t count)
+else if ((c == ' ') || (c == '\t'))
 {
-	if( store_UV_mV_table_module != NULL )
-		return (*store_UV_mV_table_module)(policy, buf, count);
-	else return -EINVAL;
+if (pair[j] != 0)
+{
+j++;
+if ((sign != 0) || (j > 1))
+break;
+}
+}
+else
+break;
 }
 
-ssize_t (*show_UV_uV_table_module)(struct cpufreq_policy *policy, char *buf) = NULL;
-static ssize_t show_UV_uV_table(struct cpufreq_policy *policy, char *buf)
+if (sign != 0)
 {
-	if( show_UV_uV_table_module != NULL )
-		return (*show_UV_uV_table_module)(policy, buf);
-	else return -EINVAL;
+if (pair[0] > 0)
+acpuclk_set_vdd(0, sign * pair[0]);
 }
-ssize_t (*store_UV_uV_table_module)(struct cpufreq_policy *policy,
-                                      const char *buf, size_t count) = NULL;
-static ssize_t store_UV_uV_table(struct cpufreq_policy *policy,
-                                      const char *buf, size_t count)
+else
 {
-	if( store_UV_uV_table_module != NULL )
-		return (*store_UV_uV_table_module)(policy, buf, count);
-	else return -EINVAL;
+if ((pair[0] > 0) && (pair[1] > 0))
+acpuclk_set_vdd((unsigned)pair[0], pair[1]);
+else
+return -EINVAL;
 }
+
+return count;
+}
+
+/* sysfs interface for UV control */
+extern ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf);
+extern ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
+                                      const char *buf, size_t count);
+extern ssize_t show_UV_uV_table(struct cpufreq_policy *policy, char *buf);
+extern ssize_t store_UV_uV_table(struct cpufreq_policy *policy,
+				 const char *buf, size_t count);
 
 /**
  * show_scaling_driver - show the current cpufreq HW/BIOS limitation
@@ -638,6 +660,7 @@ cpufreq_freq_attr_rw(scaling_governor);
 cpufreq_freq_attr_rw(scaling_setspeed);
 cpufreq_freq_attr_rw(smooth_level);
 cpufreq_freq_attr_rw(vdd_levels);
+/* UV table */
 cpufreq_freq_attr_rw(UV_mV_table);
 cpufreq_freq_attr_rw(UV_uV_table);
 
