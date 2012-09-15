@@ -280,24 +280,6 @@ read_retry:
 	return ret;
 }
 
-int min_gamma = 0, max_gamma = GAMMA_MAX - 1, min_bl = 40;
-static int get_backlight_level_from_brightness(int brightness)
-{
-	int gamma_value =0;
-	int gamma_val_x10 =0;
-
-	if(brightness >= min_bl){
-		gamma_val_x10 = 10 *(max_gamma-1-min_gamma)*brightness/(MAX_BRIGHTNESS-min_bl) 
-		    + (10 - 10*(max_gamma-1-min_gamma)*(min_bl)/(MAX_BRIGHTNESS-min_bl));
-		gamma_value=(gamma_val_x10 +5)/10 + min_gamma;
-	}else{
-		gamma_value =min_gamma;
-	}
-	if(gamma_value > max_gamma) gamma_value = max_gamma;
-	else if(gamma_value < min_gamma) gamma_value = min_gamma;
-	return gamma_value;
-}
-
 #ifdef CONFIG_AID_DIMMING
 static int get_backlight_level_from_brightness(int brightness)
 {
