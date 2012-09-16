@@ -1,4 +1,4 @@
-import init.SHV-E210K.usb.rc
+import init.SHV-E210L.usb.rc
 import init.bt.rc
 
 on early-init
@@ -28,9 +28,9 @@ on early-init
     insmod /system/lib/modules/Si4709_driver.ko
 
 on fs
-    mount ext4 /dev/block/mmcblk0p9 /system ro wait noatime
-    mount ext4 /dev/block/mmcblk0p12 /data wait nosuid nodev noatime discard,noauto_da_alloc,journal_async_commit
-    mount ext4 /dev/block/mmcblk0p8 /cache nosuid nodev noatime journal_async_commit
+    mount ext4 /dev/block/mmcblk0p10 /system ro wait noatime
+    mount ext4 /dev/block/mmcblk0p13 /data wait nosuid nodev noatime discard,noauto_da_alloc,journal_async_commit
+    mount ext4 /dev/block/mmcblk0p9 /cache nosuid nodev noatime journal_async_commit
     mount ext4 /dev/block/mmcblk0p3 /efs nosuid nodev noatime wait journal_async_commit
     
     setprop ro.crypto.fuse_sdcard true
@@ -379,8 +379,8 @@ on post-fs-data
 on boot
     mount debugfs /sys/kernel/debug /sys/kernel/debug
 
-    setprop ro.build.product smdk4x12
-    setprop ro.product.device smdk4x12
+    setprop ro.build.product SHV-E210L
+    setprop ro.product.device SHV-E210L
     setprop ro.radio.noril yes
     setprop wifi.interface wlan0
 

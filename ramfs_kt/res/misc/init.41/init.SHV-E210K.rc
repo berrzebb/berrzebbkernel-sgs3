@@ -1,4 +1,4 @@
-import init.smdk4x12.usb.rc
+import init.SHV-E210K.usb.rc
 import init.bt.rc
 
 on early-init
@@ -213,7 +213,7 @@ on boot
 	chown system system /sys/devices/virtual/sec/sec_touchkey/brightness
 
 on fs
-    mount_all /fstab.smdk4x12
+    mount_all /fstab.SHV-E210K
     setprop ro.crypto.fuse_sdcard true
 
 # Permissions for backlight

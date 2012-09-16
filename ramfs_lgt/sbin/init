@@ -14,8 +14,8 @@ if busybox grep -q 1 /sys/class/power_supply/battery/batt_lp_charging ; then
 fi
 
 mkdir -p /dev/block
-mknod /dev/block/mmcblk0p9 b 179 9
-mount -t ext4 /dev/block/mmcblk0p9 /system
+mknod /dev/block/mmcblk0p10 b 179 9
+mount -t ext4 /dev/block/mmcblk0p10 /system
 
 AOSP=0
 MIUI=0
