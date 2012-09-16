@@ -1,4 +1,4 @@
-import init.SHV-E210K.usb.rc
+import init.SHV-E210S.usb.rc
 import init.bt.rc
 
 on early-init
@@ -26,16 +26,11 @@ on post-fs-data
      # Set indication (checked by vold) that we have finished this action
      setprop vold.post_fs_data_done 1
 
-# MOBILE OFFICE Permanent memory access
-    mkdir /efs/security 0771 root root
-    chown radio system /efs/security
-    chmod 0771 /efs/security
-
 on boot
     mount debugfs /sys/kernel/debug /sys/kernel/debug
 
-    setprop ro.build.product SHV-E210K
-    setprop ro.product.device SHV-E210K
+    setprop ro.build.product SHV-E210S
+    setprop ro.product.device SHV-E210S
     setprop ro.radio.noril yes
 
 # fake some battery state
