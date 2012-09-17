@@ -714,7 +714,27 @@ static const unsigned short hardcore_tune_warm_outdoor[] = {
 	0x00ff, 0x0000, /*Mask Release*/
 	END_SEQ, 0x0000,
 };
-
+#if defined(CONFIG_FB_MDNIE_CYANOGEN)
+static const unsigned short hardcore_tune_cyanogenmod[] = {
+	0x0000, 0x0000, /*BANK 0*/
+	0x0008, 0x000c, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
+	0x0030, 0x0000, /*FA cs1 de8 hdr2 fa1*/
+	0x0092, 0x0040, /*DE pe*/
+	0x0093, 0x0040, /*DE pf*/
+	0x0094, 0x0040, /*DE pb*/
+	0x0095, 0x0040, /*DE ne*/
+	0x0096, 0x0040, /*DE nf*/
+	0x0097, 0x0040, /*DE nb*/
+	0x0098, 0x1000, /*DE max ratio*/
+	0x0099, 0x0100, /*DE min ratio*/
+	0x00b0, 0x1010, /*CS hg ry*/
+	0x00b1, 0x1010, /*CS hg gc*/
+	0x00b2, 0x1010, /*CS hg bm*/
+	0x00b3, 0x1604, /*CS weight grayTH*/
+	0x00ff, 0x0000, /*Mask Release*/
+	END_SEQ, 0x0000,
+};
+#endif
 struct mdnie_tunning_info hardcore_etc_table[CABC_MAX][OUTDOOR_MAX][TONE_MAX] = {
 	{
 		{
@@ -741,6 +761,9 @@ struct mdnie_tunning_info hardcore_tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MA
 			{"DYNAMIC_UI",			hardcore_tune_dynamic_ui},
 			{"DYNAMIC_GALLERY",		hardcore_tune_dynamic_gallery},
 			{"DYNAMIC_VT",			hardcore_tune_dynamic_vtcall},
+#if defined(CONFIG_FB_MDNIE_CYANOGEN)
+			{"CYANOGENMOD",		hardcore_tune_cyanogenmod},
+#endif
 		}, {
 			{"STANDARD_UI",			hardcore_tune_standard_ui},
 			{"STANDARD_VIDEO_NORMAL",	hardcore_tune_standard_video},
@@ -750,6 +773,9 @@ struct mdnie_tunning_info hardcore_tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MA
 			{"STANDARD_UI",			hardcore_tune_standard_ui},
 			{"STANDARD_GALLERY",		hardcore_tune_standard_gallery},
 			{"STANDARD_VT",			hardcore_tune_standard_vtcall},
+#if defined(CONFIG_FB_MDNIE_CYANOGEN)
+			{"CYANOGENMOD",		hardcore_tune_cyanogenmod},
+#endif
 		}, {
 			{"NATURAL_UI",			hardcore_tune_natural_ui},
 			{"NATURAL_VIDEO_NORMAL",	hardcore_tune_natural_video},
@@ -759,6 +785,9 @@ struct mdnie_tunning_info hardcore_tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MA
 			{"NATURAL_UI",			hardcore_tune_natural_ui},
 			{"NATURAL_GALLERY",		hardcore_tune_natural_gallery},
 			{"NATURAL_VT",			hardcore_tune_natural_vtcall},
+#if defined(CONFIG_FB_MDNIE_CYANOGEN)
+			{"CYANOGENMOD",		hardcore_tune_cyanogenmod},
+#endif
 		}, {
 			{"MOVIE_UI",			hardcore_tune_movie_ui},
 			{"MOVIE_VIDEO_NORMAL",		hardcore_tune_movie_video},
@@ -768,6 +797,9 @@ struct mdnie_tunning_info hardcore_tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MA
 			{"MOVIE_UI",			hardcore_tune_movie_ui},
 			{"MOVIE_GALLERY",		hardcore_tune_movie_gallery},
 			{"MOVIE_VT",			hardcore_tune_movie_vtcall},
+#if defined(CONFIG_FB_MDNIE_CYANOGEN)
+			{"CYANOGENMOD",		hardcore_tune_cyanogenmod},
+#endif
 		},
 	}
 };
