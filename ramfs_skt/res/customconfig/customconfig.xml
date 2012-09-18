@@ -170,8 +170,6 @@
     </settingsPane>
 
     <settingsPane description="GPU load thresholds to change between frequency steps. Defaults: 70, 62, 90, 85, 90, 90." name="GPU Thresholds">
-      <seekBar description="GPU threshold to jump down from first to second step" 
-		name="GPU Threshold 1-DOWN" action="gpu-thresh 1DOWN" unit="%" min="0" reversed="false" step="5" max="100"/>
       <seekBar description="GPU threshold to jump up from first to second step" 
 		name="GPU Threshold 1-UP" action="gpu-thresh 1UP" unit="%" min="0" reversed="false" step="5" max="100"/>
       <seekBar description="GPU threshold to jump down from second to first step" 
@@ -188,8 +186,6 @@
 		name="GPU Threshold 4-UP" action="gpu-thresh 4UP" unit="%" min="0" reversed="false" step="5" max="100"/>
       <seekBar description="GPU threshold to jump down from fifth to fourth step" 
 		name="GPU Threshold 5-DOWN" action="gpu-thresh 5DOWN" unit="%" min="0" reversed="false" step="5" max="100"/>
-      <seekBar description="GPU threshold to jump up from fifth to fourth step" 
-		name="GPU Threshold 5-UP" action="gpu-thresh 5UP" unit="%" min="0" reversed="false" step="5" max="100"/>
     </settingsPane>
   </settingsTab>
 
