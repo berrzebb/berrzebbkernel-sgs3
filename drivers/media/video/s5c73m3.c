@@ -1277,7 +1277,16 @@ static int s5c73m3_set_flash(struct v4l2_subdev *sd, int val, int recording)
 {
 	struct s5c73m3_state *state = to_state(sd);
 	int err;
+	u16 pre_flash = false;
 	cam_dbg("E, value %d\n", val);
+
+	s5c73m3_read(sd, 0x0009, S5C73M3_STILL_PRE_FLASH | 0x5000, &pre_flash);
+	if (pre_flash) {
+		err = s5c73m3_writeb(sd, S5C73M3_STILL_MAIN_FLASH
+			, S5C73M3_STILL_MAIN_FLASH_CANCEL);
+		CHECK_ERR(err);
+		state->isflash = S5C73M3_ISNEED_FLASH_UNDEFINED;
+	}
 
 retry:
 	switch (val) {
@@ -2062,6 +2071,27 @@ static int s5c73m3_aeawb_lock_unlock(struct v4l2_subdev *sd, int val)
 	return 0;
 }
 
+static void s5c73m3_wait_for_preflash_fire(struct v4l2_subdev *sd)
+{
+	u16 pre_flash = false;
+	u16 timeout_cnt = 0;
+
+	do {
+		s5c73m3_read(sd, 0x0009,
+			S5C73M3_STILL_PRE_FLASH | 0x5000, &pre_flash);
+		if (pre_flash || timeout_cnt > 20) {
+			if (!pre_flash) {
+				cam_dbg("pre_Flash = %d, timeout_cnt = %d\n",
+					pre_flash, timeout_cnt);
+			}
+			break;
+		} else
+			timeout_cnt++;
+
+		mdelay(15);
+	} while (1);
+}
+
 static int s5c73m3_start_capture(struct v4l2_subdev *sd, int val)
 {
 	struct s5c73m3_state *state = to_state(sd);
@@ -2075,7 +2105,7 @@ static int s5c73m3_start_capture(struct v4l2_subdev *sd, int val)
 		if (!pre_flash) {
 			err = s5c73m3_writeb(sd, S5C73M3_STILL_PRE_FLASH
 					, S5C73M3_STILL_PRE_FLASH_FIRE);
-			msleep(100);
+			s5c73m3_wait_for_preflash_fire(sd);
 		}
 		err = s5c73m3_writeb(sd, S5C73M3_STILL_MAIN_FLASH
 			, S5C73M3_STILL_MAIN_FLASH_FIRE);
@@ -2089,7 +2119,7 @@ static int s5c73m3_start_capture(struct v4l2_subdev *sd, int val)
 			if (isneed_flash) {
 				err = s5c73m3_writeb(sd, S5C73M3_STILL_PRE_FLASH
 						, S5C73M3_STILL_PRE_FLASH_FIRE);
-				msleep(100);
+				s5c73m3_wait_for_preflash_fire(sd);
 				err = s5c73m3_writeb(sd,
 						S5C73M3_STILL_MAIN_FLASH,
 						S5C73M3_STILL_MAIN_FLASH_FIRE);
