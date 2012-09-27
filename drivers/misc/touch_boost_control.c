@@ -13,7 +13,7 @@
 
 #define TOUCH_BOOST_CONTROL_VERSION 1
 
-static unsigned int input_boost_freq = 500000;
+static unsigned int input_boost_freq = 800000;
 
 extern void update_boost_freq(unsigned int input_boost_freq);
 
