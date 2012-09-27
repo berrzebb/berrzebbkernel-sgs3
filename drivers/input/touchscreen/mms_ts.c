@@ -50,6 +50,8 @@
 
 #include <asm/unaligned.h>
 
+#include <linux/touch_boost_control.h>
+
 #define MAX_FINGERS		10
 #define MAX_WIDTH		30
 #define MAX_PRESSURE		255
@@ -137,6 +139,8 @@ enum {
 
 struct device *sec_touchscreen;
 static struct device *bus_dev;
+
+unsigned int boost_freq = 500000;
 
 int touch_is_pressed = 0;
 
@@ -404,10 +408,13 @@ static void set_dvfs_off(struct work_struct *work)
 static void set_dvfs_lock(struct mms_ts_info *info, uint32_t on)
 {
 	int ret;
+	int pre_ret;
+	
+	pre_ret = exynos_cpufreq_get_level(boost_freq, &info->cpufreq_level);
 
 	mutex_lock(&info->dvfs_lock);
 	if (info->cpufreq_level <= 0) {
-		ret = exynos_cpufreq_get_level(800000, &info->cpufreq_level);
+		ret = pre_ret;
 		if (ret < 0)
 			pr_err("[TSP] exynos_cpufreq_get_level error");
 		goto out;
@@ -3207,6 +3214,11 @@ static struct i2c_driver mms_ts_driver = {
 		   },
 	.id_table = mms_ts_id,
 };
+
+void update_boost_freq (unsigned int input_boost_freq)
+{
+	boost_freq = input_boost_freq;
+}
 
 static int __init mms_ts_init(void)
 {
