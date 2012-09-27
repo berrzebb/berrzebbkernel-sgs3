@@ -610,7 +610,7 @@ static struct notifier_block __cpuinitdata s5p_ehci_cpu_notifier = {
 };
 #endif
 
-static int __devinit s5p_ehci_probe(struct platform_device *pdev)
+static int __init s5p_ehci_probe(struct platform_device *pdev)
 {
 	struct s5p_ehci_platdata *pdata;
 	struct s5p_ehci_hcd *s5p_ehci;
@@ -747,51 +747,9 @@ fail_hcd:
 	return err;
 }
 
-static int __devexit s5p_ehci_remove(struct platform_device *pdev)
+static int s5p_ehci_remove(struct platform_device *pdev)
 {
-	struct s5p_ehci_platdata *pdata = pdev->dev.platform_data;
-	struct s5p_ehci_hcd *s5p_ehci = platform_get_drvdata(pdev);
-	struct usb_hcd *hcd = s5p_ehci->hcd;
-
-/* pm_runtime_disable called twice during pdev unregistering
- * it causes disable_depth mismatching, so rpm for this device
- * cannot works from disable_depth count
- * replace it to runtime forbid.
- */
-#ifdef CONFIG_USB_SUSPEND
-#ifdef CONFIG_MDM_HSIC_PM
-	pm_runtime_forbid(&pdev->dev);
-#else
-	pm_runtime_disable(&pdev->dev);
-#endif
-#endif
-	s5p_ehci->power_on = 0;
-	remove_ehci_sys_file(hcd_to_ehci(hcd));
-	usb_remove_hcd(hcd);
-
-#ifdef CONFIG_EHCI_IRQ_DISTRIBUTION
-	if (num_possible_cpus() > 1) {
-		s5p_ehci_irq_no = 0;
-		s5p_ehci_irq_cpu = 0;
-		unregister_cpu_notifier(&s5p_ehci_cpu_notifier);
-	}
-#endif
-
-#if defined(CONFIG_LINK_DEVICE_HSIC) || defined(CONFIG_LINK_DEVICE_USB)
-	/*HSIC IPC control the ACTIVE_STATE*/
-	if (pdata && pdata->noti_host_states)
-		pdata->noti_host_states(pdev, S5P_HOST_OFF);
-#endif
-	if (pdata && pdata->phy_exit)
-		pdata->phy_exit(pdev, S5P_USB_PHY_HOST);
-
-	iounmap(hcd->regs);
-
-	clk_disable(s5p_ehci->clk);
-	clk_put(s5p_ehci->clk);
-
-	usb_put_hcd(hcd);
-	kfree(s5p_ehci);
+	
 
 	return 0;
 }
@@ -818,8 +776,7 @@ static const struct dev_pm_ops s5p_ehci_pm_ops = {
 };
 
 static struct platform_driver s5p_ehci_driver = {
-	.probe		= s5p_ehci_probe,
-	.remove		= __devexit_p(s5p_ehci_remove),
+	.remove		= s5p_ehci_remove,
 	.shutdown	= s5p_ehci_shutdown,
 	.driver = {
 		.name	= "s5p-ehci",
@@ -828,4 +785,16 @@ static struct platform_driver s5p_ehci_driver = {
 	}
 };
 
+static int __init s5p_ehci_init_driver(void)
+{
+	return platform_driver_probe(&s5p_ehci_driver, s5p_ehci_probe);
+}
+
+static void __exit s5p_ehci_exit_driver(void)
+{
+	return platform_driver_unregister(&s5p_ehci_driver);
+}
+
+module_init(s5p_ehci_init_driver);
+module_exit(s5p_ehci_exit_driver);
 MODULE_ALIAS("platform:s5p-ehci");
