@@ -109,7 +109,7 @@ static const unsigned short tune_dynamic_video[] = {
 	END_SEQ, 0x0000,
 };
 
-static const unsigned short tune_dynamic_vtcall[] = {
+static const unsigned short tune_dynamic_vt[] = {
 	0x0000, 0x0000, /*BANK 0*/
 	0x0008, 0x008e, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
 	0x0030, 0x0005, /*FA cs1 | de8 dnr4 hdr2 fa1*/
@@ -216,9 +216,9 @@ static const unsigned short tune_movie_video[] = {
 	0x0094, 0x0040, /*DE pb*/
 	0x0095, 0x0040, /*DE ne*/
 	0x0096, 0x0040, /*DE nf*/
-	0x0097, 0x0040, /*DE nb*/
+  	0x0097, 0x0040, /*DE nb*/
 	0x0098, 0x1000, /*DE max ratio*/
-	0x0099, 0x0100, /*DE min ratio*/
+  	0x0099, 0x0100, /*DE min ratio*/
 	0x00b0, 0x1010, /*CS hg ry*/
 	0x00b1, 0x1010, /*CS hg gc*/
 	0x00b2, 0x1010, /*CS hg bm*/
@@ -250,7 +250,7 @@ static const unsigned short tune_movie_video[] = {
 	END_SEQ, 0x0000,
 };
 
-static const unsigned short tune_movie_vtcall[] = {
+static const unsigned short tune_movie_vt[] = {
 	0x0000, 0x0000, /*BANK 0*/
 	0x0008, 0x00ae, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
 	0x0030, 0x0005, /*FA cs1 | de8 dnr4 hdr2 fa1*/
@@ -403,7 +403,7 @@ static const unsigned short tune_standard_video[] = {
 	END_SEQ, 0x0000,
 };
 
-static const unsigned short tune_standard_vtcall[] = {
+static const unsigned short tune_standard_vt[] = {
 	0x0000, 0x0000, /*BANK 0*/
 	0x0008, 0x008e, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
 	0x0030, 0x0005, /*FA cs1 | de8 dnr4 hdr2 fa1*/
@@ -568,7 +568,7 @@ static const unsigned short tune_natural_video[] = {
 	END_SEQ, 0x0000,
 };
 
-static const unsigned short tune_natural_vtcall[] = {
+static const unsigned short tune_natural_vt[] = {
 	0x0000, 0x0000, /*BANK 0*/
 	0x0008, 0x00ae, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
 	0x0030, 0x0005, /*FA cs1 | de8 dnr4 hdr2 fa1*/
@@ -683,7 +683,7 @@ static const unsigned short tune_cold_outdoor[] = {
 	END_SEQ, 0x0000,
 };
 
-static const unsigned short tune_outdoor[] = {
+static const unsigned short tune_normal_outdoor[] = {
 	0x0000, 0x0000, /*BANK 0*/
 	0x0008, 0x04ac, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
 	0x0000, 0x0001, /*BANK 1*/
@@ -737,8 +737,7 @@ static const unsigned short tune_cyanogenmod[] = {
 	END_SEQ, 0x0000,
 };
 #endif
-
-struct mdnie_tunning_info etc_table[CABC_MAX][OUTDOOR_MAX][TONE_MAX] = {
+static struct mdnie_tunning_info etc_table[CABC_MAX][OUTDOOR_MAX][TONE_MAX] = {
 	{
 		{
 			{"NORMAL",		NULL},
@@ -746,65 +745,70 @@ struct mdnie_tunning_info etc_table[CABC_MAX][OUTDOOR_MAX][TONE_MAX] = {
 			{"COLD",		tune_cold},
 		},
 		{
-			{"NORMAL_OUTDOOR",	tune_outdoor},
+			{"NORMAL_OUTDOOR",	tune_normal_outdoor},
 			{"WARM_OUTDOOR",	tune_warm_outdoor},
 			{"COLD_OUTDOOR",	tune_cold_outdoor},
 		},
 	}
 };
 
-struct mdnie_tunning_info tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MAX] = {
+static struct mdnie_tunning_info tunning_table[CABC_MAX][MODE_MAX][SCENARIO_MAX] = {
 	{
 		{
-			{"DYNAMIC_UI",			tune_dynamic_ui},
-			{"DYNAMIC_VIDEO_NORMAL",	tune_dynamic_video},
-			{"DYNAMIC_VIDEO_WARM",		tune_dynamic_video},
-			{"DYNAMIC_VIDEO_COLD",		tune_dynamic_video},
-			{"CAMERA",			tune_camera},
-			{"DYNAMIC_UI",			tune_dynamic_ui},
-			{"DYNAMIC_GALLERY",		tune_dynamic_gallery},
-			{"DYNAMIC_VT",			tune_dynamic_vtcall},
+			{"DYNAMIC_UI",		tune_dynamic_ui},
+			{"DYNAMIC_VIDEO",	tune_dynamic_video},
+			{"DYNAMIC_VIDEO",	tune_dynamic_video},
+			{"DYNAMIC_VIDEO",	tune_dynamic_video},
+			{"CAMERA",		NULL},
+			{"DYNAMIC_UI",		tune_dynamic_ui},
+			{"DYNAMIC_GALLERY",	tune_dynamic_gallery},
+			{"DYNAMIC_VT",		tune_dynamic_vt},
 #if defined(CONFIG_FB_MDNIE_CYANOGEN)
 			{"CYANOGENMOD",		tune_cyanogenmod},
 #endif
 		}, {
-			{"STANDARD_UI",			tune_standard_ui},
-			{"STANDARD_VIDEO_NORMAL",	tune_standard_video},
-			{"STANDARD_VIDEO_WARM",		tune_standard_video},
-			{"STANDARD_VIDEO_COLD",		tune_standard_video},
-			{"CAMERA",			tune_camera},
-			{"STANDARD_UI",			tune_standard_ui},
-			{"STANDARD_GALLERY",		tune_standard_gallery},
-			{"STANDARD_VT",			tune_standard_vtcall},
+			{"STANDARD_UI",		tune_standard_ui},
+			{"STANDARD_VIDEO",	tune_standard_video},
+			{"STANDARD_VIDEO",	tune_standard_video},
+			{"STANDARD_VIDEO",	tune_standard_video},
+			{"CAMERA",		NULL},
+			{"STANDARD_UI",		tune_standard_ui},
+			{"STANDARD_GALLERY",	tune_standard_gallery},
+			{"STANDARD_VT",		tune_standard_vt},
 #if defined(CONFIG_FB_MDNIE_CYANOGEN)
 			{"CYANOGENMOD",		tune_cyanogenmod},
 #endif
 		}, {
-			{"NATURAL_UI",			tune_natural_ui},
-			{"NATURAL_VIDEO_NORMAL",	tune_natural_video},
-			{"NATURAL_VIDEO_WARM",		tune_natural_video},
-			{"NATURAL_VIDEO_COLD",		tune_natural_video},
-			{"CAMERA",			tune_camera},
-			{"NATURAL_UI",			tune_natural_ui},
-			{"NATURAL_GALLERY",		tune_natural_gallery},
-			{"NATURAL_VT",			tune_natural_vtcall},
+			{"NATURAL_UI",		tune_natural_ui},
+			{"NATURAL_VIDEO",	tune_natural_video},
+			{"NATURAL_VIDEO_WARM",	tune_natural_video},
+			{"NATURAL_VIDEO_COLD",	tune_natural_video},
+			{"CAMERA",		NULL},
+			{"NATURAL_UI",		tune_natural_ui},
+			{"NATURAL_GALLERY",	tune_natural_gallery},
+			{"NATURAL_VT",		tune_natural_vt},
 #if defined(CONFIG_FB_MDNIE_CYANOGEN)
 			{"CYANOGENMOD",		tune_cyanogenmod},
 #endif
 		}, {
-			{"MOVIE_UI",			tune_movie_ui},
-			{"MOVIE_VIDEO_NORMAL",		tune_movie_video},
-			{"MOVIE_VIDEO_WARM",		tune_movie_video},
-			{"MOVIE_VIDEO_COLD",		tune_movie_video},
-			{"CAMERA",			tune_camera},
-			{"MOVIE_UI",			tune_movie_ui},
-			{"MOVIE_GALLERY",		tune_movie_gallery},
-			{"MOVIE_VT",			tune_movie_vtcall},
+			{"MOVIE_UI",		tune_movie_ui},
+			{"MOVIE_VIDEO",		tune_movie_video},
+			{"MOVIE_VIDEO",		tune_movie_video},
+			{"MOVIE_VIDEO",		tune_movie_video},
+			{"CAMERA",		NULL},
+			{"MOVIE_UI",		tune_movie_ui},
+			{"MOVIE_GALLERY",	tune_movie_gallery},
+			{"MOVIE_VT",		tune_movie_vt},
 #if defined(CONFIG_FB_MDNIE_CYANOGEN)
 			{"CYANOGENMOD",		tune_cyanogenmod},
 #endif
 		},
 	}
+};
+
+static struct mdnie_tunning_info camera_table[OUTDOOR_MAX] = {
+	{"CAMERA",		tune_camera},
+	{"CAMERA_OUTDOOR",	tune_camera_outdoor},
 };
 
 #endif/* __MDNIE_TABLE_H__ */
