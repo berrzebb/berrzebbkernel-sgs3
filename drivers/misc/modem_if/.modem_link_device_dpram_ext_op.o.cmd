@@ -3,8 +3,8 @@ cmd_drivers/misc/modem_if/modem_link_device_dpram_ext_op.o := /home/berrzebb/and
 source_drivers/misc/modem_if/modem_link_device_dpram_ext_op.o := drivers/misc/modem_if/modem_link_device_dpram_ext_op.c
 
 deps_drivers/misc/modem_if/modem_link_device_dpram_ext_op.o := \
-    $(wildcard include/config/cdma/modem/cbp72.h) \
     $(wildcard include/config/lte/modem/cmc221.h) \
+    $(wildcard include/config/cdma/modem/cbp72.h) \
     $(wildcard include/config/cdma/modem/mdm6600.h) \
     $(wildcard include/config/gsm/modem/esc6270.h) \
   include/linux/irq.h \

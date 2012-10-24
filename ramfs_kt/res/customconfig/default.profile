@@ -58,6 +58,7 @@ insecure_adbd=on
 cfs_tweaks=0
 max_cpu_lock=0
 default_stats=off
+mdniemod=on
 mdnie_shortcut_enabled=on
 mali_touch_boost_level=1
 touch_boost_level0=10

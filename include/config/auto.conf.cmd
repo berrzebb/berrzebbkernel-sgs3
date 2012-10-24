@@ -99,6 +99,7 @@ deps_config := \
 	drivers/clk/Kconfig \
 	drivers/platform/x86/Kconfig \
 	drivers/platform/Kconfig \
+	drivers/staging/cpupower/Kconfig \
 	drivers/staging/nvec/Kconfig \
 	drivers/staging/mei/Kconfig \
 	drivers/staging/altera-stapl/Kconfig \
@@ -730,7 +731,7 @@ deps_config := \
 include/config/auto.conf: \
 	$(deps_config)
 
-ifneq "$(KERNELVERSION)" "3.0.42"
+ifneq "$(KERNELVERSION)" "3.0.46"
 include/config/auto.conf: FORCE
 endif
 ifneq "$(ARCH)" "arm"

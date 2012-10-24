@@ -270,6 +270,7 @@
 		name="max_gamma" action="generic /sys/class/misc/brightness_curve/max_gamma" unit="" min="0" reversed="false" step="1" max="35"/>
     </settingsPane>
     <settingsPane description="Other screen related settings" name="Other Settings">
+		<checkbox description="mDNIe sharpness tweaks from hardcore. Requires restart to be effective." name="mDNIe Sharpness Tweaks" action="generic /tmp/mdniemod" label="mDNIe Sharpness Tweaks"/>
        <checkbox description="Enable inverting the screen colors by quickly pressing Home button 4 times" name="mDNIe Negative Toggle" action="generic01 /sys/module/gpio_keys/parameters/mdnie_shortcut_enabled" label="mDNIe Negative Toggle"/>
        <spinner description="Set CPU freq boost level when you touch the screen. Lower levels will help with the battery with the cost of UI lags" name="Touch Boost Level" action="generickmem touch_boost_level 0 int">
              <spinnerItem name="Disabled" value="-1"/> 

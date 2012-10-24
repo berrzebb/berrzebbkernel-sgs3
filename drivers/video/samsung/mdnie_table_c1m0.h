@@ -147,7 +147,7 @@ static const unsigned short tune_dynamic_vt[] = {
 
 static const unsigned short tune_movie_gallery[] = {
 	0x0000, 0x0000, /*BANK 0*/
-	0x0008, 0x000c, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
+	0x0008, 0x00a0, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
 	0x0030, 0x0000, /*FA cs1 de8 hdr2 fa1*/
 	0x00e1, 0xd6ac, /*SCR RrCr*/
 	0x00e2, 0x32ff, /*SCR RgCg*/
@@ -178,7 +178,7 @@ static const unsigned short tune_movie_gallery[] = {
 
 static const unsigned short tune_movie_ui[] = {
 	0x0000, 0x0000, /*BANK 0*/
-	0x0008, 0x000c, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
+	0x0008, 0x00a0, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
 	0x0030, 0x0000, /*FA cs1 de8 hdr2 fa1*/
 	0x00e1, 0xd6ac, /*SCR RrCr*/
 	0x00e2, 0x32ff, /*SCR RgCg*/
@@ -209,20 +209,18 @@ static const unsigned short tune_movie_ui[] = {
 
 static const unsigned short tune_movie_video[] = {
 	0x0000, 0x0000, /*BANK 0*/
-	0x0008, 0x000c, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
+	0x0008, 0x00a0, /*Dither8 UC4 ABC2 CP1 | CC8 MCM4 SCR2 SCC1 | CS8 DE4 DNR2 HDR1*/
 	0x0030, 0x0000, /*FA cs1 de8 hdr2 fa1*/
-	0x0092, 0x0040, /*DE pe*/
-	0x0093, 0x0040, /*DE pf*/
-	0x0094, 0x0040, /*DE pb*/
-	0x0095, 0x0040, /*DE ne*/
-	0x0096, 0x0040, /*DE nf*/
-  	0x0097, 0x0040, /*DE nb*/
-	0x0098, 0x1000, /*DE max ratio*/
-  	0x0099, 0x0100, /*DE min ratio*/
+	0x0092, 0x0000, /*DE pe*/
+	0x0093, 0x0000, /*DE pf*/
+	0x0094, 0x0000, /*DE pb*/
+	0x0095, 0x0000, /*DE ne*/
+	0x0096, 0x0000, /*DE nf*/
+	0x0097, 0x0000, /*DE nb*/
 	0x00b0, 0x1010, /*CS hg ry*/
 	0x00b1, 0x1010, /*CS hg gc*/
 	0x00b2, 0x1010, /*CS hg bm*/
-	0x00b3, 0x1604, /*CS weight grayTH*/
+	0x00b3, 0x1004, /*CS weight grayTH*/
 	0x00e1, 0xd6ac, /*SCR RrCr*/
 	0x00e2, 0x32ff, /*SCR RgCg*/
 	0x00e3, 0x2ef0, /*SCR RbCb*/

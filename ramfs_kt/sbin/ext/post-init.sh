@@ -23,7 +23,21 @@ read_config
 
 #cpu undervolting
 echo "${cpu_undervolting}" > /sys/devices/system/cpu/cpu0/cpufreq/vdd_levels
-
+insmod /lib/modules/exfat_core.ko
+insmod /lib/modules/exfat_fs.ko
+insmod /lib/modules/mdniemod.ko
+insmod /lib/modules/cifs.ko
+insmod /lib/modules/nfs.ko
+insmod /lib/modules/sunrpc.ko
+insmod /lib/modules/lockd.ko
+insmod /lib/modules/cifs.ko
+insmod /lib/modules/scsi_wait_scan.ko
+/home/berrzebb/android/kernel/ramfs_kt/sbin/ext/post-init.sh
+#mdnie sharpness tweak
+if [ "$mdniemod" == "on" ];then
+. /sbin/ext/mdnie-sharpness-tweak.sh
+. /etc/mdnie/mdnie-sharpness-tweak.sh
+fi
 if [ "$logger" == "on" ];then
 insmod /lib/modules/logger.ko
 fi

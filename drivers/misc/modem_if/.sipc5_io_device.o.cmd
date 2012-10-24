@@ -4,7 +4,6 @@ source_drivers/misc/modem_if/sipc5_io_device.o := drivers/misc/modem_if/sipc5_io
 
 deps_drivers/misc/modem_if/sipc5_io_device.o := \
     $(wildcard include/config/link/device/c2c.h) \
-    $(wildcard include/config/size.h) \
     $(wildcard include/config/offset.h) \
     $(wildcard include/config/link/device/dpram.h) \
   include/linux/init.h \
@@ -800,6 +799,7 @@ deps_drivers/misc/modem_if/sipc5_io_device.o := \
     $(wildcard include/config/mach/u1/kor/lgt.h) \
   drivers/misc/modem_if/modem_prj.h \
     $(wildcard include/config/mask.h) \
+    $(wildcard include/config/size.h) \
   include/linux/wakelock.h \
     $(wildcard include/config/has/wakelock.h) \
     $(wildcard include/config/wakelock/stat.h) \
