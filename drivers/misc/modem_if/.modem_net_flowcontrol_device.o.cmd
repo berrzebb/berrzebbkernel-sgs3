@@ -256,7 +256,7 @@ deps_drivers/misc/modem_if/modem_net_flowcontrol_device.o := \
   include/asm-generic/errno-base.h \
   include/linux/rwsem.h \
     $(wildcard include/config/rwsem/generic/spinlock.h) \
-  include/linux/rwsem-spinlock.h \
+  /home/berrzebb/android/kernel/arch/arm/include/asm/rwsem.h \
   include/linux/percpu_counter.h \
   include/linux/smp.h \
     $(wildcard include/config/use/generic/smp/helpers.h) \

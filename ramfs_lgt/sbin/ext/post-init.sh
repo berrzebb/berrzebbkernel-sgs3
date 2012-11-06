@@ -30,13 +30,11 @@ insmod /lib/modules/cifs.ko
 insmod /lib/modules/nfs.ko
 insmod /lib/modules/sunrpc.ko
 insmod /lib/modules/lockd.ko
-insmod /lib/modules/cifs.ko
 insmod /lib/modules/scsi_wait_scan.ko
-/home/berrzebb/android/kernel/ramfs_kt/sbin/ext/post-init.sh
+
 #mdnie sharpness tweak
 if [ "$mdniemod" == "on" ];then
 . /sbin/ext/mdnie-sharpness-tweak.sh
-. /etc/mdnie/mdnie-sharpness-tweak.sh
 fi
 if [ "$logger" == "on" ];then
 insmod /lib/modules/logger.ko

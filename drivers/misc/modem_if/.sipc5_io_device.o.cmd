@@ -274,7 +274,7 @@ deps_drivers/misc/modem_if/sipc5_io_device.o := \
   include/linux/prio_tree.h \
   include/linux/rwsem.h \
     $(wildcard include/config/rwsem/generic/spinlock.h) \
-  include/linux/rwsem-spinlock.h \
+  /home/berrzebb/android/kernel/arch/arm/include/asm/rwsem.h \
   include/linux/completion.h \
   include/linux/wait.h \
   /home/berrzebb/android/kernel/arch/arm/include/asm/current.h \

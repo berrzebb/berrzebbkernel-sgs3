@@ -273,7 +273,7 @@ deps_drivers/misc/modem_if/modem_link_device_usb.o := \
     $(wildcard include/config/have/arch/mutex/cpu/relax.h) \
   include/linux/rwsem.h \
     $(wildcard include/config/rwsem/generic/spinlock.h) \
-  include/linux/rwsem-spinlock.h \
+  /home/berrzebb/android/kernel/arch/arm/include/asm/rwsem.h \
   include/linux/srcu.h \
   include/linux/topology.h \
     $(wildcard include/config/sched/smt.h) \
