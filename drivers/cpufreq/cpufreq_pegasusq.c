@@ -1248,8 +1248,7 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 
 	if (max_load_freq > up_threshold * policy->cur) {
 		/* for multiple freq_step */
-		int inc = policy->max * (dbs_tuners_ins.freq_step
-					- DEF_FREQ_STEP_DEC * 2) / 100;
+		int inc = 100000;
 		int target = 0;
 
 		/* for multiple freq_step */
