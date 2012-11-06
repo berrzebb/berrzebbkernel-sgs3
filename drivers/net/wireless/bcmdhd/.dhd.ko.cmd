@@ -1,1 +1,0 @@
-cmd_drivers/net/wireless/bcmdhd/dhd.ko := /home/berrzebb/android/toolchain/eabi-4.7.4/bin/arm-eabi-ld -EL -r  -T /home/berrzebb/android/kernel/scripts/module-common.lds   -o drivers/net/wireless/bcmdhd/dhd.ko drivers/net/wireless/bcmdhd/dhd.o drivers/net/wireless/bcmdhd/dhd.mod.o
