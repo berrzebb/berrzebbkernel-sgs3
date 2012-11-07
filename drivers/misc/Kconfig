@@ -749,16 +749,16 @@ config SLP_PROCESS_MON
 
 config CPU_UNDERVOLTING
 	tristate "Several undervolting interfaces"
-	default m
+	default y
 
 config MALI_CONTROL
 	tristate "mali gpu control interfaces"
-	depends on VIDEO_MALI400MP
-	default m
+	depends on VIDEO_MALI400MP_UMP
+	default y
 
 config M0_MODS
 	tristate "i9300 specific modifications"
-	depends on VIDEO_MALI400MP
+	depends on VIDEO_MALI400MP_UMP
 	default m
 
 endif # MISC_DEVICES

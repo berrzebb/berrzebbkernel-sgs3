@@ -44,9 +44,6 @@
 #include <mach/dev.h>
 #endif
 
-bool throttle_enabled = true;
-module_param(throttle_enabled, bool, 0755);
-
 static enum {
 ENABLE_TEMP_MON	= 0x1,
 ENABLE_TEST_MODE = 0x2,
@@ -77,9 +74,6 @@ extern int mali_voltage_lock_push(int lock_vol);
 extern int mali_voltage_lock_pop(void);
 #endif
 #define CONFIG_TC_VOLTAGE /* Temperature compensated voltage */
-#else
-#define mali_voltage_lock_push(msg...) 0
-#define mali_voltage_lock_pop(msg...) 0
 #endif
 
 static unsigned int get_curr_temp(struct s5p_tmu_info *info)
@@ -553,9 +547,6 @@ static void exynos4_handler_tmu_state(struct work_struct *work)
 	static int auto_refresh_changed;
 	static int check_handle;
 	int trend = 0;
-
-	if (!throttle_enabled)
-		return;
 
 	mutex_lock(&tmu_lock);
 

@@ -468,6 +468,8 @@ static void gpio_keys_fake_off_check(unsigned long _data)
 }
 #endif
 
+void gpu_boost_on_touch(void);
+
 static void gpio_keys_report_event(struct gpio_button_data *bdata)
 {
 	static int64_t homekey_lasttime = 0;
@@ -638,6 +640,7 @@ static void gpio_keys_report_event(struct gpio_button_data *bdata)
 
 		if (button->code == KEY_POWER)
 			printk(KERN_DEBUG"[keys]PWR %d\n", !!state);
+		if(!!state) gpu_boost_on_touch();
 	}
 }
 
