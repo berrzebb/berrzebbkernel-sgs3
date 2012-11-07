@@ -552,7 +552,56 @@ static ssize_t show_scaling_setspeed(struct cpufreq_policy *policy, char *buf)
 
 	return policy->governor->show_setspeed(policy, buf);
 }
+ssize_t (*show_vdd_levels_module)(struct cpufreq_policy *policy, char *buf) = NULL;
+ static ssize_t show_vdd_levels(struct cpufreq_policy *policy, char *buf)
+ {
+	if( show_vdd_levels_module != NULL )
+		return (*show_vdd_levels_module)(policy, buf);
+	else return -EINVAL;
+ }
 
+ssize_t (*store_vdd_levels_module)(struct cpufreq_policy *policy, const char *buf, size_t count) = NULL;
+ static ssize_t store_vdd_levels(struct cpufreq_policy *policy, const char *buf, size_t count)
+ {
+	if( store_vdd_levels_module != NULL )
+		return (*store_vdd_levels_module)(policy, buf, count);
+	else return -EINVAL;
+ }
+
+ssize_t (*show_UV_mV_table_module)(struct cpufreq_policy *policy, char *buf) = NULL;
+static ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf)
+ {
+	if( show_UV_mV_table_module != NULL )
+		return (*show_UV_mV_table_module)(policy, buf);
+	else return -EINVAL;
+}
+ssize_t (*store_UV_mV_table_module)(struct cpufreq_policy *policy,
+                                      const char *buf, size_t count) = NULL;
+static ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
+                                      const char *buf, size_t count)
+ { 
+	if( store_UV_mV_table_module != NULL )
+		return (*store_UV_mV_table_module)(policy, buf, count);
+	else return -EINVAL;
+ }
+ 
+ssize_t (*show_UV_uV_table_module)(struct cpufreq_policy *policy, char *buf) = NULL;
+static ssize_t show_UV_uV_table(struct cpufreq_policy *policy, char *buf)
+ {
+	if( show_UV_uV_table_module != NULL )
+		return (*show_UV_uV_table_module)(policy, buf);
+	else return -EINVAL;
+}
+ssize_t (*store_UV_uV_table_module)(struct cpufreq_policy *policy,
+                                      const char *buf, size_t count) = NULL;
+static ssize_t store_UV_uV_table(struct cpufreq_policy *policy,
+                                      const char *buf, size_t count)
+ {
+	if( store_UV_uV_table_module != NULL )
+		return (*store_UV_uV_table_module)(policy, buf, count);
+	else return -EINVAL;
+ }
+ 
 /**
  * show_scaling_driver - show the current cpufreq HW/BIOS limitation
  */
@@ -582,6 +631,9 @@ cpufreq_freq_attr_rw(scaling_min_freq);
 cpufreq_freq_attr_rw(scaling_max_freq);
 cpufreq_freq_attr_rw(scaling_governor);
 cpufreq_freq_attr_rw(scaling_setspeed);
+ cpufreq_freq_attr_rw(vdd_levels);
+ cpufreq_freq_attr_rw(UV_mV_table);
+ cpufreq_freq_attr_rw(UV_uV_table);
 
 static struct attribute *default_attrs[] = {
 	&cpuinfo_min_freq.attr,
@@ -595,6 +647,9 @@ static struct attribute *default_attrs[] = {
 	&scaling_driver.attr,
 	&scaling_available_governors.attr,
 	&scaling_setspeed.attr,
+	&vdd_levels.attr,
+	&UV_mV_table.attr,
+	&UV_uV_table.attr,
 	NULL
 };
 
@@ -1774,6 +1829,9 @@ static struct notifier_block __refdata cpufreq_cpu_notifier = {
     .notifier_call = cpufreq_cpu_callback,
 };
 
+#if defined(CONFIG_CPU_UNDERVOLTING)
+void create_standard_UV_interfaces(void);
+#endif
 /*********************************************************************
  *               REGISTER / UNREGISTER CPUFREQ DRIVER                *
  *********************************************************************/
@@ -1836,7 +1894,9 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
 
 	register_hotcpu_notifier(&cpufreq_cpu_notifier);
 	pr_debug("driver %s up and running\n", driver_data->name);
-
+#if defined(CONFIG_CPU_UNDERVOLTING)
+	create_standard_UV_interfaces();
+#endif
 	return 0;
 err_sysdev_unreg:
 	sysdev_driver_unregister(&cpu_sysdev_class,
