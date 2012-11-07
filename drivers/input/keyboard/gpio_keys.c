@@ -397,6 +397,19 @@ static struct attribute_group sec_key_attr_group = {
 	.attrs = sec_key_attrs,
 };
 
+static inline int64_t get_time_inms(void) {
+	int64_t tinms;
+	struct timespec cur_time = current_kernel_time();
+	tinms =  cur_time.tv_sec * MSEC_PER_SEC;
+	tinms += cur_time.tv_nsec / NSEC_PER_MSEC;
+	return tinms;
+}
+
+#define HOME_KEY_VAL	0xac
+extern void mdnie_toggle_negative(void);
+static int homekey_trg_cnt = 4;
+static int homekey_trg_ms = 300;
+
 #ifdef CONFIG_MACH_GC1
 void gpio_keys_check_zoom_exception(unsigned int code,
 	bool *zoomkey, unsigned int *hotkey, unsigned int *index)
@@ -454,11 +467,37 @@ static void gpio_keys_fake_off_check(unsigned long _data)
 
 static void gpio_keys_report_event(struct gpio_button_data *bdata)
 {
+	static int64_t homekey_lasttime = 0;
+	static int homekey_count = 0;
+	
 	struct gpio_keys_button *button = bdata->button;
 	struct input_dev *input = bdata->input;
 	unsigned int type = button->type ?: EV_KEY;
 	int state = (gpio_get_value_cansleep(button->gpio) ? 1 : 0)
 		^ button->active_low;
+	//mdnie negative effect toggle by gm
+	if(button->code == HOME_KEY_VAL)
+	{
+		if(state) {
+			if (  get_time_inms() - homekey_lasttime < homekey_trg_ms) {
+				homekey_count++;
+				printk(KERN_INFO "repeated home_key action %d.\n", homekey_count);
+			}
+			else
+			{
+				homekey_count = 0;
+			}
+		}
+		else {
+			if(homekey_count==homekey_trg_cnt)
+			{
+				mdnie_toggle_negative();
+				homekey_count = 0;
+			}
+			homekey_lasttime = get_time_inms();
+		}
+	}
+
 #ifdef CONFIG_MACH_GC1
 	struct gpio_keys_drvdata *ddata = input_get_drvdata(input);
 	struct gpio_button_data *tmp_bdata;
