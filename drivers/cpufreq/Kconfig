@@ -310,13 +310,17 @@ config SLP_GOV_DYNAMIC_PARAMS
         bool "check SLP GOV. Dynamic Params feature"
 	depends on CPU_FREQ_GOV_SLP
 
-config CPU_FREQ_GOV_LULZACTIVE
-	tristate "'lulzactive' cpufreq governor"
-	depends on CPU_FREQ
-	help
-	  'lulzactive' - a new interactive governor by Tegrak!
+config CPU_FREQ_GOV_LULZACTIVEQ
+        tristate "'lulzactiveq' cpufreq governor"
+        depends on CPU_FREQ
+        help
+          'lulzactiveq' - hotplug mechanism added in lulzactive
 
-	  If in doubt, say N.
+config CPU_FREQ_GOV_LULZACTIVEQ
+        tristate "'lulzactiveq' cpufreq governor"
+        depends on CPU_FREQ
+        help
+          'lulzactiveq' - hotplug mechanism added in lulzactive
 
 config CPU_FREQ_DVFS_MONITOR
 	bool "dvfs monitor"
