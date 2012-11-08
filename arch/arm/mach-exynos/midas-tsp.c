@@ -2488,7 +2488,7 @@ static void flexrate_qos_cancel(struct work_struct *work)
 static DECLARE_DELAYED_WORK(busqos_work, flexrate_qos_cancel);
 
 extern void gpu_boost_on_touch(void);
-extern void new_gpu_boost_on_touch(void);
+//extern void new_gpu_boost_on_touch(void);
 void midas_tsp_request_qos(void *data)
 {
 #ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_FLEXRATE
@@ -2505,8 +2505,8 @@ void midas_tsp_request_qos(void *data)
 		pm_qos_update_request(&busfreq_qos, 266000);
 	}
 
-	SAMSUNGROM gpu_boost_on_touch();
-	else new_gpu_boost_on_touch();
+	gpu_boost_on_touch();
+	//else new_gpu_boost_on_touch();
 
 	/* Cancel the QoS request after 1/10 sec */
 	schedule_delayed_work_on(0, &busqos_work, HZ / 5);

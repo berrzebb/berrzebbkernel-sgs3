@@ -519,10 +519,6 @@ static ssize_t show_related_cpus(struct cpufreq_policy *policy, char *buf)
 	return show_cpus(policy->related_cpus, buf);
 }
 
-extern ssize_t show_smooth_level(struct cpufreq_policy *policy, char *buf);
-extern ssize_t store_smooth_level(struct cpufreq_policy *policy,
-									const char *buf, size_t count);
-
 /**
  * show_affected_cpus - show the CPUs affected by each transition
  */
@@ -556,9 +552,6 @@ static ssize_t show_scaling_setspeed(struct cpufreq_policy *policy, char *buf)
 
 	return policy->governor->show_setspeed(policy, buf);
 }
-extern ssize_t show_smooth_level(struct cpufreq_policy *policy, char *buf);
-extern ssize_t store_smooth_level(struct cpufreq_policy *policy,
-									const char *buf, size_t count);
 ssize_t (*show_vdd_levels_module)(struct cpufreq_policy *policy, char *buf) = NULL;
  static ssize_t show_vdd_levels(struct cpufreq_policy *policy, char *buf)
  {
@@ -638,7 +631,6 @@ cpufreq_freq_attr_rw(scaling_min_freq);
 cpufreq_freq_attr_rw(scaling_max_freq);
 cpufreq_freq_attr_rw(scaling_governor);
 cpufreq_freq_attr_rw(scaling_setspeed);
-cpufreq_freq_attr_rw(smooth_level);
 cpufreq_freq_attr_rw(vdd_levels);
 cpufreq_freq_attr_rw(UV_mV_table);
 cpufreq_freq_attr_rw(UV_uV_table);
@@ -655,7 +647,6 @@ static struct attribute *default_attrs[] = {
 	&scaling_driver.attr,
 	&scaling_available_governors.attr,
 	&scaling_setspeed.attr,
-	&smooth_level.attr,
 	&vdd_levels.attr,
 	&UV_mV_table.attr,
 	&UV_uV_table.attr,
