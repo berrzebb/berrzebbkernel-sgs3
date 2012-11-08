@@ -29,7 +29,7 @@ rm -rf $RAMFS_TMP/.hg
 mkdir -p $INITRAMFS/lib/modules
 mv -f drivers/media/video/samsung/mali_r3p0_lsi/mali.ko drivers/media/video/samsung/mali_r3p0_lsi/mali_r3p0_lsi.ko
 find -name '*.ko' -exec cp -av {} $RAMFS_TMP/lib/modules/ \;
-/opt/toolchains/arm-eabi-4.4.3/bin/arm-eabi-strip --strip-unneeded $RAMFS_TMP/lib/modules/*
+~/android/toolchain/arm-eabi-4.4.3/bin/arm-eabi-strip --strip-unneeded $RAMFS_TMP/lib/modules/*
 
 cd $RAMFS_TMP
 find | fakeroot cpio -H newc -o > $RAMFS_TMP.cpio 2>/dev/null
@@ -43,3 +43,6 @@ nice -n 10 make -j3 USE_CCACHE=1 zImage || exit 1
 
 $KERNELDIR/mkshbootimg.py $KERNELDIR/boot.img $KERNELDIR/boot.img.pre $KERNELDIR/payload.tar
 rm -f $KERNELDIR/boot.img.pre
+rm -f $DROPBOXDIR/boot.tar
+rm -f $KERNELDIR/boot.tar
+tar cvf boot.tar boot.img
