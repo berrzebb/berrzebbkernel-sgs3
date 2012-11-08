@@ -414,7 +414,7 @@ static void an30259a_set_led_blink(enum an30259a_led_enum led,
 		LED_DYNAMIC_CURRENT = LED_B_CURRENT;
 
 	/* In user case, LED current is restricted */
-	brightness = (brightness * LED_DYNAMIC_CURRENT) / LED_MAX_CURRENT;
+	//brightness = (brightness * LED_DYNAMIC_CURRENT) / LED_MAX_CURRENT;
 
 	if (delay_on_time > SLPTT_MAX_VALUE)
 		delay_on_time = SLPTT_MAX_VALUE;
@@ -556,6 +556,17 @@ static ssize_t store_an30259a_led_blink(struct device *dev,
 	return count;
 }
 
+static ssize_t show_an30259a_led_fade(struct device *dev,
+                    struct device_attribute *attr, char *buf)
+{
+    int ret;
+
+    ret = sprintf(buf, "%d\n", led_enable_fade);
+    pr_info("[LED] %s: led_fade=%d\n", __func__, led_enable_fade);
+
+    return ret;
+}
+
 static ssize_t store_an30259a_led_fade(struct device *dev,
           struct device_attribute *devattr,
           const char *buf, size_t count)
@@ -569,6 +580,7 @@ static ssize_t store_an30259a_led_fade(struct device *dev,
     dev_err(&data->client->dev, "fail to get led_fade value.\n");
     return count;
   }
+	if(enabled >= 0)
   led_enable_fade = enabled;
   printk(KERN_DEBUG "led_fade is called\n");
   return count;
@@ -754,7 +766,7 @@ static DEVICE_ATTR(led_pattern, 0664, NULL, \
 					store_an30259a_led_pattern);
 static DEVICE_ATTR(led_blink, 0664, NULL, \
 					store_an30259a_led_blink);
-static DEVICE_ATTR(led_fade, 0664, NULL, \
+static DEVICE_ATTR(led_fade, 0664, show_an30259a_led_fade, \
 					store_an30259a_led_fade);
 static DEVICE_ATTR(led_br_lev, 0664, NULL, \
 					store_an30259a_led_br_lev);
@@ -896,7 +908,7 @@ static int __devinit an30259a_probe(struct i2c_client *client,
 	data->shadow_reg[AN30259A_REG_LED1CC + 2] = 0;
 	msleep(200);
 #ifdef SEC_LED_SPECIFIC
-	led_enable_fade = 1;
+	AOSPROM led_enable_fade = 1;
 	
 	led_dev = device_create(sec_class, NULL, 0, data, "led");
 	if (IS_ERR(led_dev)) {

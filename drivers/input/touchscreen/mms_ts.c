@@ -50,6 +50,7 @@
 
 #include <asm/unaligned.h>
 #include "../keyboard/cypress/cypress-touchkey.h"
+#include <mach/midas-tsp.h>
 
 #define MAX_FINGERS		10
 #define MAX_WIDTH		30
@@ -685,7 +686,7 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 #else
 			if (info->finger_state[id] != 0) {
                 // report state to cypress-touchkey for backlight timeout
-                touchscreen_state_report(0);
+                AOSPROM touchscreen_state_report(0);
 				dev_notice(&client->dev,
 					"finger [%d] up, palm %d\n", id, palm);
 			}
@@ -713,8 +714,8 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 		if (info->finger_state[id] == 0) {
 			info->finger_state[id] = 1;
             // report state to cypress-touchkey for backlight timeout
-            touchscreen_state_report(1);
-			dev_dbg(&client->dev,
+            AOSPROM touchscreen_state_report(1);
+ 			dev_dbg(&client->dev,
 				"finger id[%d]: x=%d y=%d w=%d major=%d minor=%d angle=%d palm=%d\n",
 				id, x, y, tmp[4], tmp[6], tmp[7]
 				, angle, palm);
@@ -740,7 +741,7 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 	}
 
 #if TOUCH_BOOSTER
-	gpu_boost_on_touch();
+	if(!!touch_is_pressed) midas_tsp_request_qos(NULL);
 	set_dvfs_lock(info, !!touch_is_pressed);
 #endif
 out:

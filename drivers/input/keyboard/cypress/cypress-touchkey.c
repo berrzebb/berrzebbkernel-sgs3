@@ -45,6 +45,7 @@
 #include <linux/i2c/mxt224_u1.h>
 #endif
 #include <linux/i2c/touchkey_i2c.h>
+#include <mach/midas-tsp.h>
 
 /* M0 Touchkey temporary setting */
 
@@ -710,7 +711,7 @@ static irqreturn_t touchkey_interrupt(int irq, void *dev_id)
 
 	if (pressed) {
 		set_touchkey_debug('P');
-
+AOSPROM {
         // enable lights on keydown
         if (touch_led_disabled == 0) {
             if (touchkey_led_status == TK_CMD_LED_OFF) {
@@ -722,8 +723,10 @@ static irqreturn_t touchkey_interrupt(int irq, void *dev_id)
                 mod_timer(&touch_led_timer, jiffies + (HZ * touch_led_timeout));
             }
         }
-        
+}
+		midas_tsp_request_qos(NULL);
     } else {
+AOSPROM {
         // touch led timeout on keyup
         if (touch_led_disabled == 0) {
             if (timer_pending(&touch_led_timer) == 0) {
@@ -734,6 +737,7 @@ static irqreturn_t touchkey_interrupt(int irq, void *dev_id)
                 mod_timer(&touch_led_timer, jiffies + (HZ * touch_led_timeout));
             }
         }
+}
     }
 
 	if (get_tsp_status() && pressed)
@@ -1131,6 +1135,10 @@ static ssize_t touchkey_led_control(struct device *dev,
 	data = ledCmd[data-1];
 #endif
 
+SAMSUNGROM
+	ret = i2c_touchkey_write(tkey_i2c->client, (u8 *) &data, 1);
+else
+{
     if (touch_led_disabled == 0) {
         ret = i2c_touchkey_write(tkey_i2c->client, (u8 *) &data, 1);
     }
@@ -1151,7 +1159,7 @@ static ssize_t touchkey_led_control(struct device *dev,
             del_timer(&touch_led_timer);
         }
     }
- 
+ }
 
 	if (ret == -ENODEV)
 		touchled_cmd_reversed = 1;
@@ -1160,7 +1168,19 @@ static ssize_t touchkey_led_control(struct device *dev,
 
 	return size;
 }
-static ssize_t touch_led_force_disable(struct device *dev,
+
+static ssize_t touch_led_force_disable_show(struct device *dev,
+        struct device_attribute *attr, char *buf)
+{
+    int ret;
+
+    ret = sprintf(buf, "%d\n", touch_led_disabled);
+    pr_info("[Touchkey] %s: touch_led_disabled=%d\n", __func__, touch_led_disabled);
+
+    return ret;
+}
+
+static ssize_t touch_led_force_disable_store(struct device *dev,
         struct device_attribute *attr, const char *buf,
         size_t size)
 {
@@ -1184,9 +1204,20 @@ static ssize_t touch_led_force_disable(struct device *dev,
     return size;
 }
 static DEVICE_ATTR(force_disable, S_IRUGO | S_IWUSR | S_IWGRP,
-        NULL, touch_led_force_disable);
+        touch_led_force_disable_show, touch_led_force_disable_store);
 
-static ssize_t touch_led_set_timeout(struct device *dev,
+static ssize_t touch_led_timeout_show(struct device *dev,
+        struct device_attribute *attr, char *buf)
+{
+    int ret;
+
+    ret = sprintf(buf, "%d\n", touch_led_timeout);
+    pr_info("[Touchkey] %s: touch_led_timeout=%d\n", __func__, touch_led_timeout);
+
+    return ret;
+}
+
+static ssize_t touch_led_timeout_store(struct device *dev,
         struct device_attribute *attr, const char *buf,
         size_t size)
 {
@@ -1204,7 +1235,7 @@ static ssize_t touch_led_set_timeout(struct device *dev,
     return size;
 }
 static DEVICE_ATTR(timeout, S_IRUGO | S_IWUSR | S_IWGRP,
-        NULL, touch_led_set_timeout);
+        touch_led_timeout_show, touch_led_timeout_store);
 
 void touch_led_timedout(unsigned long ptr)
 {
