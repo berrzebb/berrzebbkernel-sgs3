@@ -228,8 +228,8 @@ int sysctl_legacy_va_layout;
 #endif
 
 extern int late_init_android_gadget(int romtype);
-extern int mfc_late_init(void);
-/*#ifdef CONFIG_MALI_R3P0_LSI
+/*extern int mfc_late_init(void);
+#ifdef CONFIG_MALI_R3P0_LSI
 extern int new_late_mali_driver_init(void);
 extern int late_mali_driver_init(void);
 #endif
@@ -266,8 +266,9 @@ rom_feature_set_sysctl(struct ctl_table *table, int write,
 #ifdef CONFIG_MALI_CONTROL
     register_mali_control();
 #endif
-*/
+
 	 mfc_late_init();
+*/
   }
   return 0;
 }
