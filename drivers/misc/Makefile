@@ -88,6 +88,9 @@ obj-$(CONFIG_MACH_M0_CTC)   += cw_tty.o
 
 # Secure OS Mobicore Interface
 obj-$(CONFIG_MOBICORE_SUPPORT)  += tzic.o
+<<<<<<< HEAD
 obj-$(CONFIG_CPU_UNDERVOLTING)	+= cpu_undervolting.o
 obj-$(CONFIG_MALI_CONTROL)	+= mali_control.o
 obj-$(CONFIG_M0_MODS)		+= m0_mods.o
+=======
+>>>>>>> parent of 3e92fdb... touchscreen: mms_ts: add Touch Booster Control that allows user configurable frequency which the device will boost into when it touches the screen.
