@@ -194,6 +194,7 @@ void mali_regulator_set_voltage(int min_uV, int max_uV)
 	}
 #endif
 */
+
 	_mali_osk_lock_wait(mali_dvfs_lock, _MALI_OSK_LOCKMODE_RW);
 
 	if( IS_ERR_OR_NULL(g3d_regulator) )
@@ -285,7 +286,7 @@ mali_bool mali_clk_get(mali_bool bis_vpll)
 				MALI_PRINT( ( "MALI Error : failed to get source mali parent clock\n"));
 				return MALI_FALSE;
 			}
-			 clk_enable(mali_parent_clock);
+			clk_enable(mali_parent_clock);
 		}
 	}
 	else // mpll
@@ -577,9 +578,9 @@ static _mali_osk_errcode_t enable_mali_clocks(void)
 #if CPUFREQ_LOCK_DURING_440
 	/* lock/unlock CPU freq by Mali */
 	if (mali_gpu_clk >= 533)
-		err = cpufreq_lock_by_mali(1400);
-	else if (mali_gpu_clk >= 440)
 		err = cpufreq_lock_by_mali(1200);
+	else if (mali_gpu_clk == 440)
+		err = cpufreq_lock_by_mali(1000);
 #endif
 #else
 	mali_regulator_set_voltage(mali_runtime_resume.vol, mali_runtime_resume.vol);
@@ -595,6 +596,7 @@ static _mali_osk_errcode_t disable_mali_clocks(void)
 {
 	clk_disable(mali_clock);
 	MALI_DEBUG_PRINT(3,("disable_mali_clocks mali_clock %p \n", mali_clock));
+
 #if MALI_DVFS_ENABLED
 	/* lock/unlock CPU freq by Mali */
 	cpufreq_unlock_by_mali();

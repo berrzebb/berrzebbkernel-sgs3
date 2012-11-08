@@ -213,9 +213,8 @@ static int mfc_open(struct inode *inode, struct file *file)
 
 	mutex_lock(&mfcdev->lock);
 
-#ifdef CONFIG_USE_MFC_CMA
+#if defined(CONFIG_USE_MFC_CMA) && defined(CONFIG_MACH_M0)
 	if (atomic_read(&mfcdev->inst_cnt) == 0) {
-#if defined(CONFIG_MACH_M0) || defined(CONFIG_MACH_GC1)
 		size_t size = 0x02800000;
 		mfcdev->cma_vaddr = dma_alloc_coherent(mfcdev->device, size,
 						&mfcdev->cma_dma_addr, 0);
@@ -229,9 +228,9 @@ static int mfc_open(struct inode *inode, struct file *file)
 					 __func__, __LINE__, (int)size,
 						(int)mfcdev->cma_vaddr,
 						(int)mfcdev->cma_dma_addr);
-#endif
 	}
 #endif
+
 #if SUPPORT_SLICE_ENCODING
 _SUPPORT_SLICE_ENCODING
 {
@@ -239,6 +238,7 @@ _SUPPORT_SLICE_ENCODING
 	mfcdev->frame_sys = 0;
 }
 #endif
+
 	if (!mfcdev->fw.state) {
 		if (mfcdev->fw.requesting) {
 			printk(KERN_INFO "MFC F/W request is on-going, try again\n");
@@ -393,6 +393,7 @@ _SUPPORT_SLICE_ENCODING
 	if (mfcdev->wait_frame_timeout == 1)
 		wake_up(&mfcdev->wait_frame);
 }
+#endif
 #ifdef CONFIG_SLP_DMABUF
 	ret = mfc_queue_alloc(mfc_ctx);
 	if (ret < 0) {
@@ -418,17 +419,6 @@ err_inst_cnt:
 #endif
 err_start_hw:
 	if (atomic_read(&mfcdev->inst_cnt) == 0) {
-#ifdef CONFIG_USE_MFC_CMA
-#if defined(CONFIG_MACH_M0) || defined(CONFIG_MACH_GC1)
-		size_t size = 0x02800000;
-		dma_free_coherent(mfcdev->device, size, mfcdev->cma_vaddr,
-							mfcdev->cma_dma_addr);
-		printk(KERN_INFO "%s[%d] size 0x%x, vaddr 0x%x, base 0x0%x\n",
-				__func__, __LINE__, (int)size,
-				(int) mfcdev->cma_vaddr,
-				(int)mfcdev->cma_dma_addr);
-#endif
-#endif
 		if (mfc_power_off() < 0)
 			mfc_err("power disable failed\n");
 	}
@@ -445,7 +435,6 @@ err_fw_state:
 
 	return ret;
 }
-#endif
 
 static int mfc_release(struct inode *inode, struct file *file)
 {
@@ -584,15 +573,15 @@ _SUPPORT_SLICE_ENCODING
 	if (mfcdev->wait_frame_timeout == 1)
 		wake_up(&dev->wait_frame);
 }
+#endif
 #ifdef CONFIG_SLP_DMABUF
 	mfc_queue_free(mfc_ctx);
 #endif
 
 err_pwr_disable:
 
-#ifdef CONFIG_USE_MFC_CMA
+#if defined(CONFIG_USE_MFC_CMA) && defined(CONFIG_MACH_M0)
 	if (atomic_read(&mfcdev->inst_cnt) == 0) {
-#if defined(CONFIG_MACH_M0) || defined(CONFIG_MACH_GC1)
 		size_t size = 0x02800000;
 		dma_free_coherent(mfcdev->device, size, mfcdev->cma_vaddr,
 					mfcdev->cma_dma_addr);
@@ -600,13 +589,11 @@ err_pwr_disable:
 				__func__, __LINE__, (int)size,
 				(int) mfcdev->cma_vaddr,
 				(int)mfcdev->cma_dma_addr);
-#endif
 	}
 #endif
 	mutex_unlock(&dev->lock);
 	return ret;
 }
-#endif
 
 /* FIXME: add request firmware ioctl */
 static long mfc_ioctl_cm(struct file *file, unsigned int cmd, unsigned long arg)
