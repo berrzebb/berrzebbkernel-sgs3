@@ -1716,7 +1716,7 @@ static struct platform_driver android_platform_driver = {
 };
 #endif
 
-int late_init_android_gadget(int romtype)
+static int __init init(void)
 {
 	struct android_dev *dev;
 	int err;
@@ -1731,8 +1731,7 @@ int late_init_android_gadget(int romtype)
 		return -ENOMEM;
 
 	dev->disable_depth = 1;
-  //if(!romtype) dev->functions = supported3sung_functions;
-  //else dev->functions = supported_functions;
+	dev->functions = supported_functions;
 	INIT_LIST_HEAD(&dev->enabled_functions);
 	INIT_WORK(&dev->work, android_work);
 	mutex_init(&dev->mutex);
@@ -1777,10 +1776,6 @@ int late_init_android_gadget(int romtype)
 #endif
 
 	return usb_composite_probe(&android_usb_driver, android_bind);
-}
-static int __init init(void)
-{
-return 0;
 }
 module_init(init);
 
