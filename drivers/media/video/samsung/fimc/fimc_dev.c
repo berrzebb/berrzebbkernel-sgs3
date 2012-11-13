@@ -525,7 +525,6 @@ static inline void fimc_irq_cap(struct fimc_control *ctrl)
 	int buf_index;
 	int framecnt_seq;
 	int available_bufnum;
-	static int is_frame_end_irq;
 	struct v4l2_control is_ctrl;
 	u32 is_fn;
 
@@ -548,9 +547,10 @@ static inline void fimc_irq_cap(struct fimc_control *ctrl)
 	}
 
 	if (pdata->hw_ver >= 0x51) {
-		if (is_frame_end_irq || ctrl->status == FIMC_BUFFER_STOP) {
+		if (ctrl->is_frame_end_irq ||
+			ctrl->status == FIMC_BUFFER_STOP) {
 			pp = fimc_hwget_present_frame_count(ctrl);
-			is_frame_end_irq = 0;
+			ctrl->is_frame_end_irq = 0;
 		} else {
 			pp = fimc_hwget_before_frame_count(ctrl);
 		}
@@ -566,7 +566,7 @@ static inline void fimc_irq_cap(struct fimc_control *ctrl)
 			printk(KERN_INFO "%s[%d] SKIPPED\n", __func__, pp);
 			if (ctrl->cap->nr_bufs == 1) {
 				fimc_stop_capture(ctrl);
-				is_frame_end_irq = 1;
+				ctrl->is_frame_end_irq = 1;
 				ctrl->status = FIMC_BUFFER_STOP;
 			}
 			ctrl->restart = false;
@@ -637,7 +637,7 @@ static inline void fimc_irq_cap(struct fimc_control *ctrl)
 			if (available_bufnum == 1) {
 				ctrl->cap->lastirq = 0;
 				fimc_stop_capture(ctrl);
-				is_frame_end_irq = 1;
+				ctrl->is_frame_end_irq = 1;
 
 				printk(KERN_INFO "fimc_irq_cap available_bufnum = %d\n", available_bufnum);
 				ctrl->status = FIMC_BUFFER_STOP;
@@ -1579,7 +1579,7 @@ static int fimc_release(struct file *filp)
 	struct fimc_ctx *ctx;
 	int ret = 0, i;
 #if (defined(CONFIG_EXYNOS_DEV_PD) && defined(CONFIG_PM_RUNTIME))
-	//struct platform_device *pdev = to_platform_device(ctrl->dev);
+	struct platform_device *pdev = to_platform_device(ctrl->dev);
 #endif
 
 	ctx = &ctrl->out->ctx[ctx_id];
