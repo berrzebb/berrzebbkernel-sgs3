@@ -4,7 +4,7 @@ export RAMFS_SOURCE=`readlink -f $KERNELDIR/ramfs_$1`
 export PARENT_DIR=`readlink -f ..`
 export USE_SEC_FIPS_MODE=true
 export DROPBOX_DIR=`readlink -f ../../Dropbox/`
-export CROSS_COMPILE=$PARENT_DIR/toolchain/eabi-4.7.4/bin/arm-eabi-
+export CROSS_COMPILE=$PARENT_DIR/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
 
 RAMFS_TMP="/tmp/ramfs-source"
 
