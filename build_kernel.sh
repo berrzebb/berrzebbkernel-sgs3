@@ -4,7 +4,7 @@ export RAMFS_SOURCE=`readlink -f $KERNELDIR/ramfs_$1`
 export PARENT_DIR=`readlink -f ..`
 export USE_SEC_FIPS_MODE=true
 export DROPBOX_DIR=`readlink -f ../../Dropbox/`
-export CROSS_COMPILE=$PARENT_DIR/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
+export CROSS_COMPILE=$PARENT_DIR/toolchain/eabi-4.7.4/bin/arm-eabi-
 
 RAMFS_TMP="/tmp/ramfs-source"
 
@@ -27,9 +27,8 @@ rm -rf $RAMFS_TMP/tmp/*
 rm -rf $RAMFS_TMP/.hg
 #copy modules into ramfs
 mkdir -p $INITRAMFS/lib/modules
-mv -f drivers/media/video/samsung/mali_r3p0_lsi/mali.ko drivers/media/video/samsung/mali_r3p0_lsi/mali_r3p0_lsi.ko
 find -name '*.ko' -exec cp -av {} $RAMFS_TMP/lib/modules/ \;
-~/android/toolchain/arm-eabi-4.4.3/bin/arm-eabi-strip --strip-unneeded $RAMFS_TMP/lib/modules/*
+~/android/toolchain/eabi-4.7.4/bin/arm-eabi-strip --strip-unneeded $RAMFS_TMP/lib/modules/*
 
 cd $RAMFS_TMP
 find | fakeroot cpio -H newc -o > $RAMFS_TMP.cpio 2>/dev/null

@@ -46,7 +46,6 @@
 #include <linux/skbuff.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
-#include <linux/io.h>
 
 #include <linux/can/dev.h>
 #include <linux/can/error.h>
@@ -970,12 +969,12 @@ static int __devexit ti_hecc_remove(struct platform_device *pdev)
 	struct net_device *ndev = platform_get_drvdata(pdev);
 	struct ti_hecc_priv *priv = netdev_priv(ndev);
 
-	unregister_candev(ndev);
 	clk_disable(priv->clk);
 	clk_put(priv->clk);
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	iounmap(priv->base);
 	release_mem_region(res->start, resource_size(res));
+	unregister_candev(ndev);
 	free_candev(ndev);
 	platform_set_drvdata(pdev, NULL);
 
