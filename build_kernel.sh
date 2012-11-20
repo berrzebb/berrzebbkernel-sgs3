@@ -27,6 +27,9 @@ rm -rf $RAMFS_TMP/tmp/*
 rm -rf $RAMFS_TMP/.hg
 #copy modules into ramfs
 mkdir -p $INITRAMFS/lib/modules
+cp $PARENT_DIR/commonmodules/*.ko $RAMFS_TMP/lib/modules/
+mv -f drivers/media/video/samsung/mali_r3p0_lsi/mali.ko drivers/media/video/samsung/mali_r3p0_lsi/mali_r3p0_lsi.ko
+mv -f drivers/net/wireless/bcmdhd.cm/dhd.ko drivers/net/wireless/bcmdhd.cm/dhd_cm.ko
 find -name '*.ko' -exec cp -av {} $RAMFS_TMP/lib/modules/ \;
 ~/android/toolchain/eabi-4.7.4/bin/arm-eabi-strip --strip-unneeded $RAMFS_TMP/lib/modules/*
 

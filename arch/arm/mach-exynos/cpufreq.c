@@ -92,9 +92,6 @@ static unsigned int exynos_get_safe_armvolt(unsigned int old_index, unsigned int
 
 	return safe_arm_volt;
 }
-
-unsigned int smooth_level = L0;
-
 static int exynos_target(struct cpufreq_policy *policy,
 			  unsigned int target_freq,
 			  unsigned int relation)
@@ -140,11 +137,11 @@ static int exynos_target(struct cpufreq_policy *policy,
 	if (!exynos_cpufreq_lock_disable && (index < g_cpufreq_limit_level))
 		index = g_cpufreq_limit_level;
 
-//#if defined(CONFIG_CPU_EXYNOS4210)
+#if defined(CONFIG_CPU_EXYNOS4210)
 	/* Do NOT step up max arm clock directly to reduce power consumption */
-	if (index == exynos_info->max_current_idx && old_index > smooth_level)
-		index = max(smooth_level, exynos_info->max_current_idx);
-//#endif
+	if (index == exynos_info->max_support_idx && old_index > 3)
+		index = 3;
+#endif
 
 	freqs.new = freq_table[index].frequency;
 	freqs.cpu = policy->cpu;
@@ -743,7 +740,11 @@ static int exynos_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	cpufreq_frequency_table_cpuinfo(policy, exynos_info->freq_table);
 
 	/* Safe default startup limits */
+#ifdef CONFIG_CPU_EXYNOS4210
+	policy->max = 1200000;
+#else
 	policy->max = 1400000;
+#endif
 	policy->min = 200000;
 
 	return 0;
@@ -859,16 +860,3 @@ err_vdd_arm:
 	return -EINVAL;
 }
 late_initcall(exynos_cpufreq_init);
-
-ssize_t show_smooth_level(struct cpufreq_policy *policy, char *buf) {
-      return sprintf(buf, "%d\n", smooth_level);
-}
-ssize_t store_smooth_level(struct cpufreq_policy *policy,
-                                      const char *buf, size_t count) {
-	unsigned int ret = -EINVAL, level;
-	ret = sscanf(buf, "%d", &level);
-	if(ret!=1) return -EINVAL;
-	if(level<0 || level>17) return -EINVAL;
-	smooth_level = level;
-	return count;
-}
