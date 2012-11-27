@@ -296,10 +296,6 @@ defined(CONFIG_MACH_SUPERIOR_KOR_SKT)
 	.gpio_host_wakeup = GPIO_IPC_HOST_WAKEUP,
 	.gpio_dynamic_switching = GPIO_AP2CMC_INT2,
 
-#ifdef CONFIG_EXYNOS4_CPUFREQ
-	.gpio_cpufreq_lock = GPIO_CMC_SPI_CLK_REQ,
-#endif
-
 	.modem_net = UMTS_NETWORK,
 	.modem_type = SEC_CMC221,
 	.link_types = LINKTYPE(LINKDEV_DPRAM) | LINKTYPE(LINKDEV_USB),
@@ -343,9 +339,6 @@ static void config_umts_modem_gpio(void)
 	unsigned gpio_dpram_wakeup = umts_modem_data.gpio_dpram_wakeup;
 	unsigned gpio_dynamic_switching =
 			umts_modem_data.gpio_dynamic_switching;
-#ifdef CONFIG_EXYNOS4_CPUFREQ
-	unsigned gpio_cpufreq_lock = umts_modem_data.gpio_cpufreq_lock;
-#endif
 
 	if (gpio_cp_on) {
 		err = gpio_request(gpio_cp_on, "CMC_ON");
@@ -471,21 +464,6 @@ static void config_umts_modem_gpio(void)
 		}
 	}
 
-#ifdef CONFIG_EXYNOS4_CPUFREQ
-	if (gpio_cpufreq_lock) {
-		err = gpio_request(gpio_cpufreq_lock, "CPUFREQ_LOCK_CNT");
-		if (err) {
-			mif_err("ERR: fail to request gpio %s\n",
-					"CPUFREQ_LOCK_CNT\n");
-		} else {
-			gpio_direction_input(gpio_cpufreq_lock);
-			s3c_gpio_setpull(gpio_cpufreq_lock,
-					S3C_GPIO_PULL_NONE);
-		}
-		s5p_register_gpio_interrupt(gpio_cpufreq_lock);
-	}
-#endif
-
 	mif_info("done\n");
 }
 
@@ -507,13 +485,9 @@ static struct modemlink_pm_data umts_link_pm_data = {
 /*
 	.link_reconnect = umts_link_reconnect,
 */
-
-#ifdef CONFIG_EXYNOS4_CPUFREQ
-	.freq_usblock = ATOMIC_INIT(0),
-	.freq_dpramlock = ATOMIC_INIT(0),
+	.freqlock = ATOMIC_INIT(0),
 	.freq_lock = exynos_frequency_lock,
 	.freq_unlock = exynos_frequency_unlock,
-#endif
 
 	.autosuspend_delay_ms = 2000,
 
@@ -527,24 +501,10 @@ static int exynos_frequency_lock(struct device *dev)
 {
 	unsigned int level, cpufreq = 600; /* 200 ~ 1400 */
 	unsigned int busfreq = 400200; /* 100100 ~ 400200 */
-	int ret = 0, lock_id;
-	atomic_t *freqlock;
+	int ret = 0;
 	struct device *busdev = dev_get("exynos-busfreq");
 
-	if (!strcmp(dev->bus->name, "usb")) {
-		lock_id = DVFS_LOCK_ID_USB_IF;
-		cpufreq = 600;
-		freqlock = &umts_link_pm_data.freq_usblock;
-	} else if (!strcmp(dev->bus->name, "platform")) { // for dpram lock
-		lock_id = DVFS_LOCK_ID_DPRAM_IF;
-		cpufreq = 800;
-		freqlock = &umts_link_pm_data.freq_dpramlock;
-	} else {
-		mif_err("ERR: Unkown unlock ID (%s)\n", dev->bus->name);
-		goto exit;
-	}
-	
-	if (atomic_read(freqlock) == 0) {
+	if (atomic_read(&umts_link_pm_data.freqlock) == 0) {
 		/* cpu frequency lock */
 		ret = exynos_cpufreq_get_level(cpufreq * 1000, &level);
 		if (ret < 0) {
@@ -553,7 +513,7 @@ static int exynos_frequency_lock(struct device *dev)
 			goto exit;
 		}
 
-		ret = exynos_cpufreq_lock(lock_id, level);
+		ret = exynos_cpufreq_lock(DVFS_LOCK_ID_USB_IF, level);
 		if (ret < 0) {
 			mif_err("ERR: exynos_cpufreq_lock fail: %d\n", ret);
 			goto exit;
@@ -575,7 +535,7 @@ static int exynos_frequency_lock(struct device *dev)
 		/* lock minimum number of cpu cores */
 		cpufreq_pegasusq_min_cpu_lock(2);
 
-		atomic_set(freqlock, 1);
+		atomic_set(&umts_link_pm_data.freqlock, 1);
 		mif_debug("level=%d, cpufreq=%d MHz, busfreq=%06d\n",
 				level, cpufreq, busfreq);
 	}
@@ -585,24 +545,12 @@ exit:
 
 static int exynos_frequency_unlock(struct device *dev)
 {
-	int ret = 0, lock_id;
-	atomic_t *freqlock;
+	int ret = 0;
 	struct device *busdev = dev_get("exynos-busfreq");
 
-	if (!strcmp(dev->bus->name, "usb")) {
-		lock_id = DVFS_LOCK_ID_USB_IF;
-		freqlock = &umts_link_pm_data.freq_usblock;
-	} else if (!strcmp(dev->bus->name, "platform")) { // for dpram lock
-		lock_id = DVFS_LOCK_ID_DPRAM_IF;
-		freqlock = &umts_link_pm_data.freq_dpramlock;
-	} else {
-		mif_err("ERR: Unkown unlock ID (%s)\n", dev->bus->name);
-		goto exit;
-	}
-
-	if (atomic_read(freqlock) == 1) {
+	if (atomic_read(&umts_link_pm_data.freqlock) == 1) {
 		/* cpu frequency unlock */
-		exynos_cpufreq_lock_free(lock_id);
+		exynos_cpufreq_lock_free(DVFS_LOCK_ID_USB_IF);
 
 		/* bus frequency unlock */
 		ret = dev_unlock(busdev, dev);
@@ -614,7 +562,7 @@ static int exynos_frequency_unlock(struct device *dev)
 		/* unlock minimum number of cpu cores */
 		cpufreq_pegasusq_min_cpu_unlock();
 
-		atomic_set(freqlock, 0);
+		atomic_set(&umts_link_pm_data.freqlock, 0);
 		mif_debug("success\n");
 	}
 exit:

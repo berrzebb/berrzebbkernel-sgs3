@@ -89,7 +89,7 @@
 
 #define HOTPLUG_UNLOCKED 0
 #define HOTPLUG_LOCKED 1
-#define PM_HOTPLUG_DEBUG 1
+#define PM_HOTPLUG_DEBUG 0
 #define NUM_CPUS num_possible_cpus()
 #define CPULOAD_TABLE (NR_CPUS + 1)
 
@@ -146,7 +146,6 @@ struct cpu_hotplug_info {
 	pid_t tgid;
 };
 
-
 static DEFINE_PER_CPU(struct cpu_time_info, hotplug_cpu_time);
 
 static bool standhotplug_enabled = true;
@@ -156,27 +155,8 @@ static bool standhotplug_enabled = true;
 static DEFINE_MUTEX(hotplug_lock);
 /* Second core values by tegrak */
 #define SECOND_CORE_VERSION (1)
-int second_core_on;
-int hotplug_on;
-void set_online_cpus(int num)
-{
-	int i;
-	for(i = 1; i < NUM_CPUS; i++)
-	{
-		if( i < num)
-		{
-			if (cpu_online(i) == 0) {
-				cpu_up(i);
-			}
-		}
-		else
-		{
-			if (cpu_online(i) == 1) {
-				cpu_down(i);
-			}
-		}
-	}
-}
+int second_core_on = 1;
+int hotplug_on = 1;
 
 bool hotplug_out_chk(unsigned int nr_online_cpu, unsigned int threshold_up,
 		unsigned int avg_load, unsigned int cur_freq)
@@ -269,7 +249,8 @@ static void hotplug_timer(struct work_struct *work)
 	// exit if we turned off dynamic hotplug by tegrak
 	// cancel the timer
 	if (!hotplug_on) {
-		set_online_cpus(second_core_on);
+		if (!second_core_on && cpu_online(1) == 1)
+			cpu_down(1);
 		goto off_hotplug;
 	}
 
@@ -324,6 +305,10 @@ static void hotplug_timer(struct work_struct *work)
 	/*standallone hotplug*/
 	flag_hotplug = standalone_hotplug(load, nr_rq_min, cpu_rq_min);
 
+	/*do not ever hotplug out CPU 0*/
+	if((cpu_rq_min == 0) && (flag_hotplug == HOTPLUG_OUT))
+		goto no_hotplug;
+
 	/*cpu hotplug*/
 	if (flag_hotplug == HOTPLUG_IN && cpu_online(select_off_cpu) == CPU_OFF) {
 		DBG_PRINT("cpu%d turning on!\n", select_off_cpu);
@@ -338,6 +323,7 @@ static void hotplug_timer(struct work_struct *work)
 	} 
 
 no_hotplug:
+	//printk("hotplug_timer done.\n");
 
 	queue_delayed_work_on(0, hotplug_wq, &hotplug_work, hotpluging_rate);
 off_hotplug:
@@ -422,22 +408,21 @@ declare_store(hotplug_on) {
 		goto finish;
 	}
 	
-	if (!hotplug_on && strcmp(buf, "on\n") == 0)
-	{
+	if (!hotplug_on && strcmp(buf, "on\n") == 0) {
 		hotplug_on = 1;
-		if(second_core_on == 1) second_core_on = NUM_CPUS;
 		// restart worker thread.
 		hotpluging_rate = CHECK_DELAY_ON;
-		if(standhotplug_enabled)
-			queue_delayed_work_on(0, hotplug_wq, &hotplug_work, hotpluging_rate);
+		queue_delayed_work_on(0, hotplug_wq, &hotplug_work, hotpluging_rate);
 		printk("second_core: hotplug is on!\n");
 	}
-	else if (hotplug_on && strcmp(buf, "off\n") == 0)
-	{
+	else if (hotplug_on && strcmp(buf, "off\n") == 0) {
 		hotplug_on = 0;
+		second_core_on = 1;
+		if (cpu_online(1) == 0) {
+			cpu_up(1);
+		}
 		printk("second_core: hotplug is off!\n");
 	}
-	set_online_cpus(second_core_on);
 	
 finish:
 	mutex_unlock(&hotplug_lock);
@@ -445,31 +430,31 @@ finish:
 }
 
 declare_show(second_core_on) {
-	return sprintf(buf, "%s\n%d\n", (second_core_on>1) ? ("on") : ("off"),
-			second_core_on);
+	return sprintf(buf, "%s\n", (second_core_on) ? ("on") : ("off"));
 }
 
 declare_store(second_core_on) {
-	int i;
 	mutex_lock(&hotplug_lock);
 	
 	if (hotplug_on || user_lock) {
 		goto finish;
 	}
 	
-	if (strcmp(buf, "on\n") == 0) {
-		second_core_on = NUM_CPUS;
-	} else if (strcmp(buf, "off\n") == 0)
-	{
+	if (!second_core_on && strcmp(buf, "on\n") == 0) {
 		second_core_on = 1;
-	} else if ( sscanf(buf, "%d\n", &i) == 1 )
-	{
-		second_core_on = i;
+		if (cpu_online(1) == 0) {
+			cpu_up(1);
+		}
+		printk("second_core: 2nd core is always on!\n");
 	}
-	second_core_on = min(max(1,second_core_on),(int)NUM_CPUS);
-	printk("core count for hotplugging: %d!\n",second_core_on);
-
-	set_online_cpus(second_core_on);
+	else if (second_core_on && strcmp(buf, "off\n") == 0) {
+		second_core_on = 0;
+		if (cpu_online(1) == 1) {
+			cpu_down(1);
+		}
+		printk("second_core: 2nd core is always off!\n");
+	}
+	
 finish:
 	mutex_unlock(&hotplug_lock);
 	return size;
@@ -546,12 +531,7 @@ static int __init exynos4_pm_hotplug_init(void)
 #endif
 	register_pm_notifier(&exynos4_pm_hotplug_notifier);
 	register_reboot_notifier(&hotplug_reboot_notifier);
-#if defined(CPU_FREQ_DEFAULT_GOV_HOTPLUG) || defined(CPU_FREQ_DEFAULT_GOV_PEGASUSQ)
-	hotplug_on = 0;
-#else
-	hotplug_on = 1;
-#endif
-	second_core_on = NUM_CPUS;
+	
 	// register second_core device by tegrak
 	ret = misc_register(&second_core_device);
 	if (ret) {
@@ -585,7 +565,9 @@ static int standhotplug_cpufreq_policy_notifier_call(struct notifier_block *this
 	case CPUFREQ_ADJUST:
 		if (
 			(!strnicmp(policy->governor->name, "pegasusq", CPUFREQ_NAME_LEN)) ||
-			(!strnicmp(policy->governor->name, "hotplug", CPUFREQ_NAME_LEN))
+			(!strnicmp(policy->governor->name, "lulzactiveq", CPUFREQ_NAME_LEN)) ||
+			(!strnicmp(policy->governor->name, "hotplug", CPUFREQ_NAME_LEN)) ||
+			(!strnicmp(policy->governor->name, "assplug", CPUFREQ_NAME_LEN))
 			) 
 		{
 			if(standhotplug_enabled)
@@ -628,6 +610,13 @@ static int __init exynos4_pm_hotplug_device_init(void)
 {
 	int ret;
 
+#if defined(CONFIG_CPU_FREQ_DEFAULT_GOV_PEGASUSQ) || \
+	defined(CONFIG_CPU_FREQ_DEFAULT_GOV_HOTPLUG) || \
+	defined(CONFIG_CPU_FREQ_DEFAULT_GOV_LULZACTIVEQ)
+	standhotplug_enabled = 0;
+#else
+	standhotplug_enabled = 1;
+#endif
 	ret = platform_device_register(&exynos4_pm_hotplug_device);
 
 	if (ret) {

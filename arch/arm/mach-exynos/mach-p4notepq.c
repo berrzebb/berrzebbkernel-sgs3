@@ -829,6 +829,24 @@ static int sec_bat_get_charger_is_full(void)
 	else
 		return 0;
 }
+
+static int sec_bat_get_aicl_current(void)
+{
+	if (smb_callbacks && smb_callbacks->get_aicl_current)
+		return smb_callbacks->get_aicl_current();
+	else
+		return 0;
+}
+
+static int sec_bat_get_input_current(void)
+{
+	if (smb_callbacks && smb_callbacks->get_input_current)
+		return smb_callbacks->get_input_current();
+	else
+		return 0;
+
+}
+
 #endif
 
 static int check_bootmode(void)
@@ -1023,7 +1041,7 @@ static void irda_device_init(void)
 				__func__, GPIO_IRDA_WAKE, ret);
 		return;
 	}
-	gpio_direction_output(GPIO_IRDA_WAKE, 1);
+	gpio_direction_output(GPIO_IRDA_WAKE, 0);
 
 	s3c_gpio_cfgpin(GPIO_IRDA_IRQ, S3C_GPIO_INPUT);
 	s3c_gpio_setpull(GPIO_IRDA_IRQ, S3C_GPIO_PULL_UP);
@@ -1311,20 +1329,52 @@ static struct sec_battery_platform_data sec_battery_platform = {
 	.set_charging_current = sec_bat_set_charging_current,
 	.get_charging_current = sec_bat_get_charging_current,
 	.get_charger_is_full = sec_bat_get_charger_is_full,
+	.get_aicl_current = sec_bat_get_aicl_current,
+	.get_input_current = sec_bat_get_input_current,
 #endif
 	.init_charger_gpio = sec_bat_gpio_init,
 	.inform_charger_connection = sec_charger_cb,
 
 #if defined(CONFIG_TARGET_LOCALE_USA)
-	.temp_high_threshold = 50000,	/* 50c */
-	.temp_high_recovery = 42000,	/* 42c */
+#if defined(CONFIG_MACH_P4NOTELTE_USA_SPR)
+	.temp_event_threshold = 70000,		/* 62c */
+	.temp_high_threshold = 48000,		/* 45c */
+	.temp_high_recovery = 43200,		/* 42c */
 	.temp_low_recovery = 0,			/* 0c */
-	.temp_low_threshold = -5000,	/* -5c */
+	.temp_low_threshold = -5000,		/* -5c */
+
+	.temp_lpm_high_threshold = 48000,	/* 45c */
+	.temp_lpm_high_recovery = 43500,	/* 42c */
+	.temp_lpm_low_recovery = 0,		/* 0c */
+	.temp_lpm_low_threshold = -3700,	/* -5c */
+#elif defined(CONFIG_MACH_P4NOTELTE_USA_VZW)
+	.temp_event_threshold = 62000,		/* 62c */
+	.temp_high_threshold = 45000,		/* 45c */
+	.temp_high_recovery = 42000,		/* 42c */
+	.temp_low_recovery = 0,			/* 0c */
+	.temp_low_threshold = -5000,		/* -5c */
+
+	.temp_lpm_high_threshold = 45000,	/* 45c */
+	.temp_lpm_high_recovery = 42000,	/* 42c */
+	.temp_lpm_low_recovery = 0,		/* 0c */
+	.temp_lpm_low_threshold = -5000,	/* -5c */
+#else
+	.temp_event_threshold = 62000,          /* 62c */
+	.temp_high_threshold = 62000,		/* 62c */
+	.temp_high_recovery = 42000,		/* 42c */
+	.temp_low_recovery = 0,			/* 0c */
+	.temp_low_threshold = -5000,		/* -5c */
+
+	.temp_lpm_high_threshold = 62000,	/* 62c */
+	.temp_lpm_high_recovery = 42000,	/* 42c */
+	.temp_lpm_low_recovery = 0,		/* 0c */
+	.temp_lpm_low_threshold = -5000,	/* -5c */
+#endif
 #elif defined(CONFIG_TARGET_LOCALE_KOR)
 #if defined(CONFIG_MACH_P4NOTELTE_KOR_SKT) || \
 	defined(CONFIG_MACH_P4NOTELTE_KOR_KT) || \
 	defined(CONFIG_MACH_P4NOTELTE_KOR_LGT)
-	.temp_high_threshold = 61400,	/* 62c */
+	.temp_high_threshold = 63000,	/* 62c */
 	.temp_high_recovery = 43000,	/* 42c */
 	.temp_low_recovery = -1000,		/* 0c */
 	.temp_low_threshold = -4000,	/* -5c */
@@ -1490,11 +1540,11 @@ static int check_sec_keyboard_dock(bool attached)
 
 /* call 30pin func. from sec_keyboard */
 static struct sec_30pin_callbacks *s30pin_callbacks;
-static int noti_sec_univ_kbd_dock(bool attached)
+static int noti_sec_univ_kbd_dock(unsigned int code)
 {
 	if (s30pin_callbacks && s30pin_callbacks->noti_univ_kdb_dock)
 		return s30pin_callbacks->
-			noti_univ_kdb_dock(s30pin_callbacks, attached);
+			noti_univ_kdb_dock(s30pin_callbacks, code);
 	return 0;
 }
 
@@ -2344,7 +2394,8 @@ static void __init exynos4_reserve_mem(void)
 		"s5p-smem/mfc=mfc-secure;"
 		"s5p-smem/fimc=ion;"
 		"s5p-smem/mfc-shm=mfc-normal;"
-		"s5p-smem/fimd=fimd;";
+		"s5p-smem/fimd=fimd;"
+		"s5p-smem/fimc0=fimc0;";
 
 		s5p_cma_region_reserve(regions, regions_secure, 0, map);
 }

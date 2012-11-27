@@ -27,7 +27,8 @@
 #include "ak8963-reg.h"
 #include <linux/sensor/sensors_core.h>
 
-#if defined(CONFIG_SLP) || defined(CONFIG_MACH_GC1)
+#if defined(CONFIG_SLP) || defined(CONFIG_MACH_GC1)\
+	|| defined(CONFIG_MACH_M3_USA_TMO)
 #define FACTORY_TEST
 #else
 #undef FACTORY_TEST

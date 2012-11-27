@@ -387,14 +387,7 @@ static inline u16 get_mask_send(struct dpram_link_device *dpld, int id)
  */
 static inline void reset_txq_circ(struct dpram_link_device *dpld, int dev)
 {
-	struct link_device *ld = &dpld->ld;
-	u32 head = get_txq_head(dpld, dev);
-	u32 tail = get_txq_tail(dpld, dev);
-
-	mif_info("%s: %s_TXQ: HEAD[%u] <== TAIL[%u]\n",
-		ld->name, get_dev_name(dev), head, tail);
-
-	set_txq_head(dpld, dev, tail);
+	set_txq_head(dpld, dev, get_txq_tail(dpld, dev));
 }
 
 /**
@@ -407,14 +400,7 @@ static inline void reset_txq_circ(struct dpram_link_device *dpld, int dev)
  */
 static inline void reset_rxq_circ(struct dpram_link_device *dpld, int dev)
 {
-	struct link_device *ld = &dpld->ld;
-	u32 head = get_rxq_head(dpld, dev);
-	u32 tail = get_rxq_tail(dpld, dev);
-
-	mif_info("%s: %s_RXQ: TAIL[%u] <== HEAD[%u]\n",
-		ld->name, get_dev_name(dev), tail, head);
-
-	set_rxq_tail(dpld, dev, head);
+	set_rxq_tail(dpld, dev, get_rxq_head(dpld, dev));
 }
 
 /**
@@ -1409,7 +1395,7 @@ static int recv_ipc_with_rxb(struct dpram_link_device *dpld, int dev,
 
 	rcvd = get_rxq_rcvd(dpld, dev, mst, &dcst);
 	if (unlikely(rcvd < 0)) {
-#if 0//ndef CONFIG_SAMSUNG_PRODUCT_SHIP
+#ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
 		trigger_force_cp_crash(dpld);
 #endif
 		goto exit;
@@ -1487,7 +1473,7 @@ static int recv_ipc_with_skb(struct dpram_link_device *dpld, int dev,
 	/* Get data size in the RXQ and in/out pointer values */
 	rcvd = get_rxq_rcvd(dpld, dev, mst, &dcst);
 	if (unlikely(rcvd < 0)) {
-#if 0//ndef CONFIG_SAMSUNG_PRODUCT_SHIP
+#ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
 		trigger_force_cp_crash(dpld);
 #endif
 		goto exit;
@@ -1511,7 +1497,7 @@ static int recv_ipc_with_skb(struct dpram_link_device *dpld, int dev,
 		/* Check the SIPC5 frame */
 		len = sipc5_check_frame_in_dev(ld, dev, frm, rest);
 		if (len <= 0) {
-#if 0//ndef CONFIG_SAMSUNG_PRODUCT_SHIP
+#ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
 			save_ipc_trace(dpld, dev, &dcst);
 			trigger_force_cp_crash(dpld);
 #endif
@@ -1602,7 +1588,9 @@ static void recv_ipc_msg(struct dpram_link_device *dpld,
 		if (stat->head[i][RX] == stat->tail[i][RX]) {
 			mif_debug("%s: %s_RXQ is empty\n",
 				ld->name, get_dev_name(i));
-		} else {
+			continue;
+		}
+
 		/* Invoke an RX function only when there is data in the RXQ */
 		if (dpld->rx_with_skb)
 			ret = recv_ipc_with_skb(dpld, i, stat);
@@ -1610,7 +1598,6 @@ static void recv_ipc_msg(struct dpram_link_device *dpld,
 			ret = recv_ipc_with_rxb(dpld, i, stat);
 		if (ret < 0)
 			reset_rxq_circ(dpld, i);
-		}
 
 		/* Check and process REQ_ACK (at this time, in == out) */
 		if (intr & get_mask_req_ack(dpld, i)) {
@@ -1632,12 +1619,12 @@ static void recv_ipc_msg(struct dpram_link_device *dpld,
 #endif
 	}
 
-	if (intr & INT_MASK_RES_ACK_SET) {
-		if (intr & INT_MASK_RES_ACK_R)
+	if (intr && INT_MASK_RES_ACK_SET) {
+		if (intr && INT_MASK_RES_ACK_R)
 			complete_all(&dpld->req_ack_cmpl[IPC_RAW]);
-		if (intr & INT_MASK_RES_ACK_F)
+		else if (intr && INT_MASK_RES_ACK_F)
 			complete_all(&dpld->req_ack_cmpl[IPC_FMT]);
-		if (intr & INT_MASK_RES_ACK_RFS)
+		else
 			complete_all(&dpld->req_ack_cmpl[IPC_RFS]);
 	}
 }
@@ -1922,6 +1909,10 @@ static int xmit_ipc_msg(struct dpram_link_device *dpld, int dev)
 		/* Get the size of free space in the TXQ */
 		space = get_txq_space(dpld, dev, &stat);
 		if (unlikely(space < 0)) {
+#ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
+			/* Trigger a enforced CP crash */
+			trigger_force_cp_crash(dpld);
+#endif
 			/* Empty out the TXQ */
 			reset_txq_circ(dpld, dev);
 			copied = -EIO;
@@ -1982,17 +1973,10 @@ static int wait_for_res_ack(struct dpram_link_device *dpld, int dev)
 	ret = wait_for_completion_interruptible_timeout(cmpl, timeout);
 	/* ret == 0 on timeout, ret < 0 if interrupted */
 	if (ret == 0) {
-		/*
-		** The TXQ must be checked whether or not it is empty, because
-		** the interrupt mask can be overwritten by the next interrupt.
-		*/
-		if (get_txq_head(dpld, dev) == get_txq_tail(dpld, dev))
-			return timeout;
-
-		mif_info("%s: wait_for_completion TIMEOUT! (no %s_RES_ACK)\n",
+		mif_info("%s: TIMEOUT! no %s_RES_ACK\n",
 			ld->name, get_dev_name(dev));
 	} else if (ret < 0) {
-		mif_info("%s: %s: wait_for_completion interrupted! (ret %d)\n",
+		mif_info("%s: %s: interrupted (ret %d)\n",
 			ld->name, get_dev_name(dev), ret);
 	}
 
@@ -2067,11 +2051,14 @@ static void fmt_tx_work(struct work_struct *work)
 
 	ret = wait_for_res_ack(dpld, IPC_FMT);
 	/* ret < 0 if interrupted */
-	if (ret < 0)
+	if (ret < 0) {
+		mif_info("%s: wait_for_res_ack is interrupted\n", ld->name);
 		return;
+	}
 
 	/* ret == 0 on timeout */
 	if (ret == 0) {
+		mif_info("%s: wait_for_res_ack is timed out\n", ld->name);
 		queue_delayed_work(ld->tx_wq, ld->tx_dwork[IPC_FMT], delay);
 		return;
 	}
@@ -2108,11 +2095,14 @@ static void raw_tx_work(struct work_struct *work)
 
 	ret = wait_for_res_ack(dpld, IPC_RAW);
 	/* ret < 0 if interrupted */
-	if (ret < 0)
+	if (ret < 0) {
+		mif_info("%s: wait_for_res_ack is interrupted\n", ld->name);
 		return;
+	}
 
 	/* ret == 0 on timeout */
 	if (ret == 0) {
+		mif_info("%s: wait_for_res_ack is timed out\n", ld->name);
 		queue_delayed_work(ld->tx_wq, ld->tx_dwork[IPC_RAW], delay);
 		return;
 	}
@@ -2150,11 +2140,14 @@ static void rfs_tx_work(struct work_struct *work)
 
 	ret = wait_for_res_ack(dpld, IPC_RFS);
 	/* ret < 0 if interrupted */
-	if (ret < 0)
+	if (ret < 0) {
+		mif_info("%s: wait_for_res_ack is interrupted\n", ld->name);
 		return;
+	}
 
 	/* ret == 0 on timeout */
 	if (ret == 0) {
+		mif_info("%s: wait_for_res_ack is timed out\n", ld->name);
 		queue_delayed_work(ld->tx_wq, ld->tx_dwork[IPC_RFS], delay);
 		return;
 	}

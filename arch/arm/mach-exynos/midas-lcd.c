@@ -515,8 +515,8 @@ static struct s3cfb_lcd ea8061 = {
 	.name = "ea8061",
 	.height = 1280,
 	.width = 720,
-	.p_width = 74,
-	.p_height = 131,
+	.p_width = 69,
+	.p_height = 123,
 	.bpp = 24,
 	.freq = 58,
 
@@ -556,8 +556,8 @@ static struct s3cfb_lcd s6evr02 = {
 	.name = "s6evr02",
 	.height = 1280,
 	.width = 720,
-	.p_width = 74,
-	.p_height = 131,
+	.p_width = 69,
+	.p_height = 123,
 	.bpp = 24,
 	.freq = 58,
 	.freq_limit = 41,
@@ -595,8 +595,8 @@ static struct s3cfb_lcd ea8061 = {
 	.name = "ea8061",
 	.height = 1280,
 	.width = 720,
-	.p_width = 74,
-	.p_height = 131,
+	.p_width = 69,
+	.p_height = 123,
 	.bpp = 24,
 	.freq = 58,
 
@@ -742,7 +742,7 @@ static struct s3cfb_lcd s6d6aa1 = {
 		.v_bp = 25,
 		.v_bpe = 1,
 		.v_sw = 2,
-		.cmd_allow_len = 11,	 /* v_fp=stable_vfp + cmd_allow_len */
+		.cmd_allow_len = 7,	 /* v_fp=stable_vfp + cmd_allow_len+ mask_len*/
 		.stable_vfp = 2,
 	},
 
@@ -782,8 +782,9 @@ static struct s3cfb_lcd lms501xx = {
 		.v_bp = 12,
 		.v_bpe = 1,
 		.v_sw = 4,
-		.cmd_allow_len = 6,	 /* v_fp=stable_vfp + cmd_allow_len */
-		.stable_vfp = 2,
+		.cmd_allow_len = 7,
+		/* v_fp=stable_vfp + cmd_allow_len */
+		.stable_vfp = 1,
 	},
 	.polarity = {
 		.rise_vclk = 1,

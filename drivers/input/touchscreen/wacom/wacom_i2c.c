@@ -344,7 +344,7 @@ static void update_fw_p4(struct wacom_i2c *wac_i2c)
 	int retry = 2;
 
 	/* the firmware should be updated in factory mode durring the boot */
-	if (epen_check_factory_mode())
+	if (!epen_check_factory_mode())
 		retry = 0;
 
 	while (retry--) {

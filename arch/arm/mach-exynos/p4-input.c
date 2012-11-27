@@ -156,6 +156,7 @@ static u8 inform_data_rev5[] = {0,
 
 /* Added for the LTE model */
 static u8 inform_data_rev9[] = {0,
+	7, 0, 48, 255,
 	7, 1, 11, 255,
 	46, 3, 16, 24,
 	47, 1, 35, 45,
@@ -362,7 +363,7 @@ static u8 t8_config_s[] = { GEN_ACQUISITIONCONFIG_T8,
 };
 
 static u8 t9_config_s[] = { TOUCH_MULTITOUCHSCREEN_T9,
-	0x83, 0, 0, P4_NOTE_X_NUM, P4_NOTE_Y_NUM,
+	0x8B, 0, 0, P4_NOTE_X_NUM, P4_NOTE_Y_NUM,
 	0, MXT1664S_BLEN_BATT, MXT1664S_THRESHOLD_BATT, 1, 1,
 	10, 15, 1, 65, MXT1664S_MAX_MT_FINGERS, 20, 30, 20, 255, 15,
 	255, 15, 5, 246, 5, 5, 0, 0, 0, 0,

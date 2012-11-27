@@ -44,7 +44,7 @@ static ssize_t ssp_sensorhub_write(struct file *file, const char __user *buf,
 	else if (buf[0] == MSG2SSP_INST_LIBRARY_ADD)
 		instruction = ADD_LIBRARY;
 
-	if (hub_data->ssp_data->bCheckShutdown) {
+	if (hub_data->ssp_data->bSspShutdown) {
 		pr_err("%s: stop sending command(no ssp_data)", __func__);
 		return -ENOMEM;
 	}
@@ -124,7 +124,7 @@ exit:
 	return ret;
 }
 
-static const struct file_operations ssp_sensorhub_fops = {
+static struct file_operations ssp_sensorhub_fops = {
 	.owner = THIS_MODULE,
 	.open = nonseekable_open,
 	.write = ssp_sensorhub_write,
@@ -189,8 +189,10 @@ static int ssp_queue_sensorhub_events(struct ssp_sensorhub_data *hub_data,
 	}
 
 	/* how many events in the list? */
+	spin_lock_bh(&hub_data->sensorhub_lock);
 	list_for_each_entry(event, &hub_data->events_head.list, list)
 		events++;
+	spin_unlock_bh(&hub_data->sensorhub_lock);
 
 	/* drop event if queue is full */
 	if (events >= LIBRARY_MAX_NUM) {
@@ -235,6 +237,11 @@ static int ssp_queue_sensorhub_events(struct ssp_sensorhub_data *hub_data,
 		/* do not exceed max queue number */
 		if (hub_data->event_number++ >= LIBRARY_MAX_NUM - 1)
 			hub_data->event_number = 0;
+	} else {
+		spin_lock_bh(&hub_data->sensorhub_lock);
+		list_replace(hub_data->events_head.list.prev,
+				&hub_data->events[event_number].list);
+		spin_unlock_bh(&hub_data->sensorhub_lock);
 	}
 
 	pr_info("%s: total %d events", __func__, events);
@@ -418,15 +425,17 @@ static int ssp_senosrhub_thread_func(void *arg)
 		if (hub_data->transfer_try == 0) {
 			/* remove first event */
 			spin_lock_bh(&hub_data->sensorhub_lock);
-			list_del(&hub_data->first_event->list);
+			if (!list_empty(&hub_data->events_head.list))
+				list_del(&hub_data->first_event->list);
 			hub_data->transfer_ready = 0;
-			spin_unlock_bh(&hub_data->sensorhub_lock);
 
 			/* how many events in the list? */
 			events = 0;
 			list_for_each_entry(event,
 				&hub_data->events_head.list, list)
 				events++;
+			spin_unlock_bh(&hub_data->sensorhub_lock);
+
 			pr_info("%s: %d events remain", __func__, events);
 			continue;
 		}
@@ -549,6 +558,8 @@ void ssp_remove_sensorhub(struct ssp_data *ssp_data)
 {
 	struct ssp_sensorhub_data *hub_data = ssp_data->hub_data;
 
+	ssp_sensorhub_fops.write = NULL;
+	ssp_sensorhub_fops.unlocked_ioctl = NULL;
 	misc_deregister(&hub_data->sensorhub_device);
 	input_unregister_device(hub_data->sensorhub_input_dev);
 	wake_lock_destroy(&hub_data->sensorhub_wake_lock);

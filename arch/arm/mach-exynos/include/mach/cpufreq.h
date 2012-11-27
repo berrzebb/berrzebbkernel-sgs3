@@ -39,7 +39,6 @@ enum cpufreq_lock_ID {
 	DVFS_LOCK_ID_MFC,	/* MFC */
 	DVFS_LOCK_ID_USB,	/* USB */
 	DVFS_LOCK_ID_USB_IF,	/* USB_IF */
-	DVFS_LOCK_ID_DPRAM_IF,	/* DPRAM_IF */
 	DVFS_LOCK_ID_CAM,	/* CAM */
 	DVFS_LOCK_ID_PM,	/* PM */
 	DVFS_LOCK_ID_USER,	/* USER */
@@ -108,8 +107,6 @@ struct exynos_dvfs_info {
 	unsigned int	max_support_idx;
 	unsigned int	min_support_idx;
 	unsigned int	gov_support_freq;
-	unsigned int	max_current_idx;
-	unsigned int	min_current_idx;
 	struct clk	*cpu_clk;
 	unsigned int	*volt_table;
 	struct cpufreq_frequency_table	*freq_table;

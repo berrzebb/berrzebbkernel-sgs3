@@ -64,6 +64,18 @@
 
 struct s3cfb_fimd_desc		*fbfimd;
 
+struct s3cfb_global *get_fimd_global(int id)
+{
+	struct s3cfb_global *fbdev;
+
+	if (id < 5)
+		fbdev = fbfimd->fbdev[0];
+	else
+		fbdev = fbfimd->fbdev[1];
+
+	return fbdev;
+}
+
 int s3cfb_vsync_status_check(void)
 {
 	struct s3cfb_global *fbdev[2];
@@ -95,6 +107,11 @@ static void s3cfb_deactivate_vsync(struct s3cfb_global *fbdev)
 	int new_refcount;
 
 	mutex_lock(&fbdev->vsync_info.irq_lock);
+
+	if (fbdev->vsync_info.irq_refcount <= 0) {
+		mutex_unlock(&fbdev->vsync_info.irq_lock);
+		return;
+	}
 
 	new_refcount = --fbdev->vsync_info.irq_refcount;
 	WARN_ON(new_refcount < 0);

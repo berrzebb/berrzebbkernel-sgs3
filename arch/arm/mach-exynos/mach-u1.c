@@ -7537,6 +7537,17 @@ static void __init exynos4_cma_region_reserve(struct cma_region *regions_normal,
 			continue;
 
 		if (reg->start) {
+#if defined(CONFIG_USE_MFC_CMA) && defined(CONFIG_MACH_Q1_BD)
+			if (reg->start == 0x67200000) {
+				if (!memblock_is_region_reserved
+					(reg->start, 0x600000) &&
+					memblock_reserve(reg->start,
+						reg->size) >= 0)
+					reg->reserved = 1;
+			} else if (reg->start == 0x68400000)
+				reg->reserved = 1;
+			else
+#endif
 			if (!memblock_is_region_reserved(reg->start, reg->size)
 			    && memblock_reserve(reg->start, reg->size) >= 0)
 				reg->reserved = 1;
@@ -7548,6 +7559,10 @@ static void __init exynos4_cma_region_reserve(struct cma_region *regions_normal,
 				reg->reserved = 1;
 			}
 		}
+
+		if (reg->reserved)
+			pr_info("S5P/CMA: Reserved 0x%08x/0x%08x for '%s'\n",
+				reg->start, reg->size, reg->name);
 	}
 
 	if (regions_secure && regions_secure->size) {
@@ -7642,7 +7657,11 @@ static void __init exynos4_reserve_mem(void)
 			{
 				.alignment = 1 << 17,
 			},
+#if defined(CONFIG_USE_MFC_CMA) && defined(CONFIG_MACH_Q1_BD)
+			.start = 0x68400000,
+#else
 			.start = 0,
+#endif
 		},
 #endif
 #ifdef CONFIG_VIDEO_SAMSUNG_MEMSIZE_MFC0
@@ -7652,7 +7671,11 @@ static void __init exynos4_reserve_mem(void)
 			{
 				.alignment = 1 << 17,
 			},
+#if defined(CONFIG_USE_MFC_CMA) && defined(CONFIG_MACH_Q1_BD)
+			.start = 0x67200000,
+#else
 			.start = 0,
+#endif
 		},
 #endif
 #ifdef CONFIG_VIDEO_SAMSUNG_MEMSIZE_MFC
@@ -7690,7 +7713,12 @@ static void __init exynos4_reserve_mem(void)
 		{
 			.name = "tvout",
 			.size = CONFIG_VIDEO_SAMSUNG_MEMSIZE_TVOUT * SZ_1K,
+#ifdef CONFIG_USE_TVOUT_CMA
+			.start = 0x65800000,
+			.reserved = 1,
+#else
 			.start = 0,
+#endif
 		},
 #endif
 		{
@@ -7725,6 +7753,25 @@ static void __init exynos4_reserve_mem(void)
 
 }
 #endif
+
+static void __init exynos_reserve(void)
+{
+#ifdef CONFIG_USE_TVOUT_CMA
+	if (dma_declare_contiguous(&s5p_device_tvout.dev,
+			CONFIG_VIDEO_SAMSUNG_MEMSIZE_TVOUT * SZ_1K,
+			0x65800000, 0))
+		printk(KERN_ERR "%s: failed to reserve contiguous "
+			"memory region for TVOUT\n", __func__);
+#endif
+
+#ifdef CONFIG_USE_MFC_CMA
+	if (dma_declare_contiguous(&s5p_device_mfc.dev,
+			SZ_1M * 40, 0x67800000, 0))
+		printk(KERN_ERR "%s: failed to reserve contiguous "
+			"memory region for MFC0/1\n", __func__);
+#endif
+}
+
 
 static void __init exynos_sysmmu_init(void)
 {
@@ -8173,4 +8220,5 @@ MACHINE_START(SMDKC210, MODEL_NAME)
 	.init_machine	= smdkc210_machine_init,
 	.timer		= &exynos4_timer,
 	.init_early	= &exynos_init_reserve,
+	.reserve	= &exynos_reserve,
 MACHINE_END

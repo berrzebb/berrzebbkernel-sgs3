@@ -111,8 +111,6 @@ int wacom_i2c_flash_cmd(struct wacom_i2c *wac_i2c)
 		msleep(270);
 	}
 
-	wac_i2c->boot_mode = true;
-
 	return 0;
 }
 
@@ -174,6 +172,9 @@ int wacom_i2c_flash_enter(struct wacom_i2c *wac_i2c)
 {
 	if (wacom_i2c_flash_query(wac_i2c, FLASH_QUERY, FLASH_ACK) == -1)
 		return ERR_NOT_FLASH;
+
+	wac_i2c->boot_mode = true;
+
 	return 0;
 }
 
@@ -608,6 +609,7 @@ int wacom_i2c_flash(struct wacom_i2c *wac_i2c)
 		/*please redo whole process of flashing from  */
 		/*wacom_i2c_flash_erase                       */
 		do {
+			cnt++;
 			ret = wacom_i2c_flash_erase(wac_i2c, FLASH_ERASE,
 				    cmd_addr, END_BLOCK);
 			if (ret < 0) {
@@ -637,7 +639,8 @@ int wacom_i2c_flash(struct wacom_i2c *wac_i2c)
 		} while ((!valid_hex) && (cnt < 10));
 		/*2012/07/04: Wacom*/
 
-		printk(KERN_DEBUG "[E-PEN]: Firmware successfully updated\n");
+		if (cnt < 10)
+			printk(KERN_DEBUG "[E-PEN]: Firmware successfully updated\n");
 	}
 	msleep(1);
 

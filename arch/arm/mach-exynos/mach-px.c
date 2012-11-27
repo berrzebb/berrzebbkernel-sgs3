@@ -6478,11 +6478,11 @@ static int check_sec_keyboard_dock(bool attached)
 
 /* call 30pin func. from sec_keyboard */
 static struct sec_30pin_callbacks *s30pin_callbacks;
-static int noti_sec_univ_kbd_dock(bool attached)
+static int noti_sec_univ_kbd_dock(unsigned int code)
 {
 	if (s30pin_callbacks && s30pin_callbacks->noti_univ_kdb_dock)
 		return s30pin_callbacks->
-			noti_univ_kdb_dock(s30pin_callbacks, attached);
+			noti_univ_kdb_dock(s30pin_callbacks, code);
 	return 0;
 }
 

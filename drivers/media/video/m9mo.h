@@ -257,6 +257,7 @@ struct m9mo_state {
 	int factory_byte;
 	int factory_value;
 	int factory_value_size;
+	int factory_end_interrupt;
 
 	struct m9mo_focus focus;
 	struct m9mo_factory_punt_data f_punt_data;
@@ -273,6 +274,8 @@ struct m9mo_state {
 	u8 sensor_ver[10];
 	u8 phone_ver[10];
 	u8 sensor_type[25];
+
+	int fw_checksum_val;
 
 #ifdef CONFIG_CAM_DEBUG
 	u8 dbg_level;
@@ -302,6 +305,8 @@ struct m9mo_state {
 	int wb_m_value;
 	int wb_custom_rg;
 	int wb_custom_bg;
+
+	int fast_capture_set;
 
 	int vss_mode;
 	int dual_capture_start;
@@ -349,6 +354,10 @@ struct m9mo_state {
 	int strobe_en;
 	int sharpness;
 	int saturation;
+
+	int isp_mode;
+
+	int af_running;
 };
 
 /* Category */
@@ -388,6 +397,7 @@ struct m9mo_state {
 /* M9MO_CATEGORY_PARAM: 0x01 */
 #define M9MO_PARM_OUT_SEL	0x00
 #define M9MO_PARM_MON_SIZE	0x01
+#define M9MO_PARM_MON_FPS	0x02
 #define M9MO_PARM_EFFECT	0x0B
 #define M9MO_PARM_FLEX_FPS	0x67
 #define M9MO_PARM_HDMOVIE	0x32
@@ -539,6 +549,7 @@ struct m9mo_state {
 #define M9MO_LENS_ZOOM_STATUS		0x26
 #define M9MO_LENS_LENS_STATUS		0x28
 #define M9MO_LENS_ZOOM_LENS_STATUS	0x2A
+#define M9MO_LENS_AF_TEMP_INDICATE	0x2B
 #define M9MO_LENS_TIMER_LED			0x2D
 #define M9MO_LENS_AF_TOUCH_POSX		0x30
 #define M9MO_LENS_AF_TOUCH_POSY		0x32

@@ -368,9 +368,8 @@ struct s3c_reg_data {
 #define S3CFB_SET_ALPHA_MODE		_IOW('F', 313, unsigned int)
 
 extern struct fb_ops			s3cfb_ops;
-extern struct s3cfb_fimd_desc		*fbfimd;
-#define get_fimd_global(id) \
-	(id < 5 ? fbfimd->fbdev[0] : fbfimd->fbdev[1])
+extern struct s3cfb_global	*get_fimd_global(int id);
+
 /* S3CFB */
 extern struct s3c_platform_fb *to_fb_plat(struct device *dev);
 extern int s3cfb_draw_logo(struct fb_info *fb);

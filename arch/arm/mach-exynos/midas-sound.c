@@ -265,6 +265,8 @@ static struct wm8994_pdata wm1811_pdata = {
 	.micbias = {0x22, 0x22},
 #elif defined(CONFIG_MACH_C1_USA_ATT)
 	.micbias = {0x2f, 0x29},
+#elif defined(CONFIG_MACH_GC1)
+	.micbias = {0x2f, 0x2b},
 #else
 	.micbias = {0x2f, 0x27},
 #endif
@@ -484,6 +486,10 @@ void __init midas_sound_init(void)
 						ARRAY_SIZE(i2c_wm1811));
 
 #elif defined(CONFIG_MACH_M3)
+		SET_PLATDATA_CODEC(NULL);
+		i2c_register_board_info(I2C_NUM_CODEC, i2c_wm1811,
+						ARRAY_SIZE(i2c_wm1811));
+#elif defined(CONFIG_MACH_BAFFIN)
 		SET_PLATDATA_CODEC(NULL);
 		i2c_register_board_info(I2C_NUM_CODEC, i2c_wm1811,
 						ARRAY_SIZE(i2c_wm1811));

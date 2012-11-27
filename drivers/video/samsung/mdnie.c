@@ -48,7 +48,11 @@
 #include "mdnie_color_tone_4210.h"
 #else	/* CONFIG_CPU_EXYNOS4210 */
 #if defined(CONFIG_FB_S5P_S6E8AA0)
+#if defined(CONFIG_S6E8AA0_AMS465XX)
+#include "mdnie_table_superior.h"
+#else
 #include "mdnie_table_c1m0.h"
+#endif
 #elif defined(CONFIG_FB_S5P_EA8061) || defined(CONFIG_FB_S5P_S6EVR02)
 #include "mdnie_table_t0.h"
 #elif defined(CONFIG_FB_S5P_S6E63M0)
@@ -64,8 +68,9 @@
 #endif
 #include "mdnie_color_tone.h"	/* sholud be added for 4212, 4412 */
 #endif
-
-#if defined(CONFIG_TDMB) || defined(CONFIG_TARGET_LOCALE_NTT)
+#if defined(CONFIG_FB_S5P_LMS501XX)
+#include "mdnie_dmb_baffin.h"
+#elif defined(CONFIG_TDMB) || defined(CONFIG_TARGET_LOCALE_NTT)
 #include "mdnie_dmb.h"
 #endif
 
@@ -407,7 +412,7 @@ static int mdnie_set_brightness(struct backlight_device *bd)
 
 	if ((mdnie->enable) && (mdnie->bd_enable)) {
 		ret = update_brightness(mdnie);
-		dev_info(&bd->dev, "brightness=%d\n", bd->props.brightness);
+		dev_dbg(&bd->dev, "brightness=%d\n", bd->props.brightness);
 		if (ret < 0)
 			return -EINVAL;
 	}
@@ -484,19 +489,11 @@ static ssize_t scenario_store(struct device *dev,
 	dev_info(dev, "%s :: value=%d\n", __func__, value);
 
 	if (!SCENARIO_IS_VALID(value))
-#if defined(CONFIG_FB_MDNIE_CYANOGEN)
-		value = CYANOGENMOD_MODE;
-#else
 		value = UI_MODE;
-#endif
 
 #if defined(CONFIG_FB_MDNIE_PWM)
 	if (value >= SCENARIO_MAX)
-#if defined(CONFIG_FB_MDNIE_CYANOGEN)
-		value = CYANOGENMOD_MODE;
-#else
 		value = UI_MODE;
-#endif
 #endif
 
 	mutex_lock(&mdnie->lock);
@@ -788,7 +785,7 @@ void mdnie_late_resume(struct early_suspend *h)
 		pd->power_on(NULL, 1);
 
 	if (mdnie->enable) {
-		dev_info(&mdnie->bd->dev, "brightness=%d\n", mdnie->bd->props.brightness);
+		dev_dbg(&mdnie->bd->dev, "brightness=%d\n", mdnie->bd->props.brightness);
 		update_brightness(mdnie);
 	}
 
@@ -811,7 +808,7 @@ void mdnie_toggle_negative(void)
 	g_mdnie->negative = !g_mdnie->negative;
 	mutex_unlock(&g_mdnie->lock);
 
-	set_mdnie_value(g_mdnie,0);
+	set_mdnie_value(g_mdnie, 0);
 }
 
 static int mdnie_probe(struct platform_device *pdev)
@@ -864,11 +861,7 @@ static int mdnie_probe(struct platform_device *pdev)
 		dev_err(&mdnie->bd->dev, "failed to add sysfs entries, %d\n", __LINE__);
 #endif
 
-#if defined(CONFIG_FB_MDNIE_CYANOGEN)
-	mdnie->scenario = CYANOGENMOD_MODE;
-#else
 	mdnie->scenario = UI_MODE;
-#endif
 	mdnie->mode = STANDARD;
 	mdnie->tone = TONE_NORMAL;
 	mdnie->outdoor = OUTDOOR_OFF;
