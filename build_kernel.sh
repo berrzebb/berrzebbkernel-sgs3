@@ -4,14 +4,14 @@ export RAMFS_SOURCE=`readlink -f $KERNELDIR/ramfs_$1`
 export PARENT_DIR=`readlink -f ..`
 export USE_SEC_FIPS_MODE=true
 export DROPBOX_DIR=`readlink -f ../../Dropbox/`
-export CROSS_COMPILE=$PARENT_DIR/toolchain/eabi-4.7.4/bin/arm-eabi-
+export CROSS_COMPILE=$PARENT_DIR/toolchain/eabi-4.7.4_11/bin/arm-eabi-
 
 RAMFS_TMP="/tmp/ramfs-source"
 
 export ARCH=arm
 
 cd $KERNELDIR/
-nice -n 10 make -j4 USE_CCACHE=1 || exit 1
+nice -n 10 make -j4 || exit 1
 #remove previous ramfs files
 rm -rf $RAMFS_TMP
 rm -rf $RAMFS_TMP.cpio
@@ -28,10 +28,9 @@ rm -rf $RAMFS_TMP/.hg
 #copy modules into ramfs
 mkdir -p $INITRAMFS/lib/modules
 cp $PARENT_DIR/commonmodules/*.ko $RAMFS_TMP/lib/modules/
-mv -f drivers/media/video/samsung/mali_r3p0_lsi/mali.ko drivers/media/video/samsung/mali_r3p0_lsi/mali_r3p0_lsi.ko
 mv -f drivers/net/wireless/bcmdhd.cm/dhd.ko drivers/net/wireless/bcmdhd.cm/dhd_cm.ko
 find -name '*.ko' -exec cp -av {} $RAMFS_TMP/lib/modules/ \;
-~/android/toolchain/eabi-4.7.4/bin/arm-eabi-strip --strip-unneeded $RAMFS_TMP/lib/modules/*
+"$CROSS_COMPILE"strip --strip-unneeded $RAMFS_TMP/lib/modules/*
 
 cd $RAMFS_TMP
 find | fakeroot cpio -H newc -o > $RAMFS_TMP.cpio 2>/dev/null
@@ -39,7 +38,7 @@ ls -lh $RAMFS_TMP.cpio
 gzip -9 $RAMFS_TMP.cpio
 cd -
 
-nice -n 10 make -j3 USE_CCACHE=1 zImage || exit 1
+nice -n 10 make -j3 zImage || exit 1
 
 ./mkbootimg --kernel $KERNELDIR/arch/arm/boot/zImage --ramdisk $RAMFS_TMP.cpio.gz --board smdk4x12 --base 0x10000000 --pagesize 2048 --ramdiskaddr 0x11000000 -o $KERNELDIR/boot.img.pre
 

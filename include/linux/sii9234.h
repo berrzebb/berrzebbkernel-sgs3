@@ -66,9 +66,9 @@ extern void max77693_muic_usb_cb(u8 usb_mode);
 #endif
 #endif
 
-//#ifdef	CONFIG_SAMSUNG_WORKAROUND_HPD_GLANCE
+#ifdef	CONFIG_SAMSUNG_WORKAROUND_HPD_GLANCE
 extern	void mhl_hpd_handler(bool onoff);
-//#endif
+#endif
 
 #ifdef	CONFIG_SAMSUNG_USE_11PIN_CONNECTOR
 extern	int	max77693_muic_get_status1_adc1k_value(void);

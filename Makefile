@@ -1,6 +1,6 @@
 VERSION = 3
 PATCHLEVEL = 0
-SUBLEVEL = 51
+SUBLEVEL = 53
 EXTRAVERSION =
 NAME = Sneaky Weasel
 
@@ -193,7 +193,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?= arm
-CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
+CROSS_COMPILE	?= ccache ~/home/berrzebb/android/toolchain/eabi-4.7.4_11/bin/arm-eabi-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -243,7 +243,7 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 	  else if [ -x /bin/bash ]; then echo /bin/bash; \
 	  else echo sh; fi ; fi)
 
-HOSTCC       = gcc
+HOSTCC       = ccache gcc
 HOSTCXX      = g++
 HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -Ofast -fomit-frame-pointer
 HOSTCXXFLAGS = -Ofast
@@ -369,16 +369,11 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
- 		   -mtune=cortex-a9 \
+		   -pipe \
 		   -ffast-math \
+		   -mfpu=neon \
 		   -march=armv7-a \
- 		   -mfpu=neon \
-		   -funswitch-loops -fpredictive-commoning \
-     		-fmodulo-sched -fmodulo-sched-allow-regmoves \
-		   -fgraphite-identity -ftree-loop-distribution \
-		   -floop-interchange -floop-block -floop-strip-mine -ftree-loop-linear \
-		   -fgcse-after-reload \
-			-fipa-cp-clone
+		   -mtune=cortex-a9
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
@@ -580,10 +575,7 @@ KBUILD_CFLAGS	+= -fdiagnostics-show-option -Werror \
 		   -Wno-error=unused-function \
 		   -Wno-error=unused-variable \
 		   -Wno-error=unused-value \
-		   -Wno-error=unused-label \
-		   -Wno-error=uninitialized \
-		   -Wno-error=address \
-		   -Wno-error=enum-compare
+		   -Wno-error=unused-label
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
