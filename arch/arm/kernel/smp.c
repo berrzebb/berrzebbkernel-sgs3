@@ -266,6 +266,7 @@ static void __cpuinit smp_store_cpu_info(unsigned int cpuid)
 	struct cpuinfo_arm *cpu_info = &per_cpu(cpu_data, cpuid);
 
 	cpu_info->loops_per_jiffy = loops_per_jiffy;
+
 	store_cpu_topology(cpuid);
 }
 
@@ -374,7 +375,6 @@ void __init smp_prepare_boot_cpu(void)
 void __init smp_prepare_cpus(unsigned int max_cpus)
 {
 	unsigned int ncores = num_possible_cpus();
-
 
 	init_cpu_topology();
 
@@ -733,4 +733,3 @@ void flush_all_cpu_caches(void)
 {
 	on_each_cpu(flush_all_cpu_cache, NULL, 1);
 }
-EXPORT_SYMBOL(flush_all_cpu_caches);

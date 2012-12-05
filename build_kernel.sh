@@ -28,7 +28,6 @@ rm -rf $RAMFS_TMP/.hg
 #copy modules into ramfs
 mkdir -p $INITRAMFS/lib/modules
 cp $PARENT_DIR/commonmodules/*.ko $RAMFS_TMP/lib/modules/
-mv -f drivers/net/wireless/bcmdhd.cm/dhd.ko drivers/net/wireless/bcmdhd.cm/dhd_cm.ko
 find -name '*.ko' -exec cp -av {} $RAMFS_TMP/lib/modules/ \;
 "$CROSS_COMPILE"strip --strip-unneeded $RAMFS_TMP/lib/modules/*
 

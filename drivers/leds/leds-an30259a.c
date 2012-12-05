@@ -147,6 +147,7 @@ struct device *led_dev;
 int led_enable_fade;
 /*path : /sys/class/sec/led/led_pattern*/
 /*path : /sys/class/sec/led/led_blink*/
+
 /*path : /sys/class/sec/led/led_fade*/
 /*path : /sys/class/sec/led/led_brightness*/
 /*path : /sys/class/leds/led_r/brightness*/
@@ -414,7 +415,7 @@ static void an30259a_set_led_blink(enum an30259a_led_enum led,
 		LED_DYNAMIC_CURRENT = LED_B_CURRENT;
 
 	/* In user case, LED current is restricted */
-	//brightness = (brightness * LED_DYNAMIC_CURRENT) / LED_MAX_CURRENT;
+	SAMSUNGROM brightness = (brightness * LED_DYNAMIC_CURRENT) / LED_MAX_CURRENT;
 
 	if (delay_on_time > SLPTT_MAX_VALUE)
 		delay_on_time = SLPTT_MAX_VALUE;
@@ -568,22 +569,25 @@ static ssize_t show_an30259a_led_fade(struct device *dev,
 }
 
 static ssize_t store_an30259a_led_fade(struct device *dev,
-          struct device_attribute *devattr,
-          const char *buf, size_t count)
+					struct device_attribute *devattr,
+					const char *buf, size_t count)
 {
-  int retval;
-  int enabled = 0;
-  struct an30259a_data *data = dev_get_drvdata(dev);
+	int retval;
+	int enabled = 0;
+	struct an30259a_data *data = dev_get_drvdata(dev);
 
-  retval = sscanf(buf, "%d", &enabled);
-  if (retval == 0) {
-    dev_err(&data->client->dev, "fail to get led_fade value.\n");
-    return count;
-  }
+	retval = sscanf(buf, "%d", &enabled);
+
+	if (retval == 0) {
+		dev_err(&data->client->dev, "fail to get led_fade value.\n");
+		return count;
+	}
 	if(enabled >= 0)
-  led_enable_fade = enabled;
-  printk(KERN_DEBUG "led_fade is called\n");
-  return count;
+	led_enable_fade = enabled;
+
+	printk(KERN_DEBUG "led_fade is called\n");
+
+	return count;
 }
 
 static ssize_t store_led_r(struct device *dev,
@@ -893,20 +897,7 @@ static int __devinit an30259a_probe(struct i2c_client *client,
 		INIT_WORK(&(data->leds[i].brightness_work),
 				 an30259a_led_brightness_work);
 	}
-	// this is not an ugly hack to shutdown led.
-	data->shadow_reg[AN30259A_REG_LEDON] &= ~(LED_ON << 0);
-	data->shadow_reg[AN30259A_REG_LEDON] &= ~(LED_ON << 1);
-	data->shadow_reg[AN30259A_REG_LEDON] &= ~(LED_ON << 2);
-	data->shadow_reg[AN30259A_REG_LED1CNT2 + 0 * 4] &= ~AN30259A_MASK_DELAY;
-	data->shadow_reg[AN30259A_REG_LED1CNT2 + 1 * 4] &= ~AN30259A_MASK_DELAY;
-	data->shadow_reg[AN30259A_REG_LED1CNT2 + 2 * 4] &= ~AN30259A_MASK_DELAY;
-	data->shadow_reg[AN30259A_REG_LEDON] &= ~(LED_SLOPE_MODE << 0);
-	data->shadow_reg[AN30259A_REG_LEDON] &= ~(LED_SLOPE_MODE << 1);
-	data->shadow_reg[AN30259A_REG_LEDON] &= ~(LED_SLOPE_MODE << 2);
-	data->shadow_reg[AN30259A_REG_LED1CC + 0] = 0;
-	data->shadow_reg[AN30259A_REG_LED1CC + 1] = 0;
-	data->shadow_reg[AN30259A_REG_LED1CC + 2] = 0;
-	msleep(200);
+
 #ifdef SEC_LED_SPECIFIC
 	AOSPROM led_enable_fade = 1;
 	
@@ -961,7 +952,6 @@ static int __devexit an30259a_remove(struct i2c_client *client)
 		led_classdev_unregister(&data->leds[i].cdev);
 		cancel_work_sync(&data->leds[i].brightness_work);
 	}
-	
 	mutex_destroy(&data->mutex);
 	kfree(data);
 	return 0;

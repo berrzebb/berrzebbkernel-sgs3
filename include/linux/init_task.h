@@ -134,7 +134,7 @@ extern struct task_group root_task_group;
 #endif
 
 #ifdef CONFIG_PERF_EVENTS
-# define INIT_PERF_EVENTS(tsk)						\
+# define INIT_PERF_EVENTS(tsk)					\
 	.perf_event_mutex = 						\
 		 __MUTEX_INITIALIZER(tsk.perf_event_mutex),		\
 	.perf_event_list = LIST_HEAD_INIT(tsk.perf_event_list),

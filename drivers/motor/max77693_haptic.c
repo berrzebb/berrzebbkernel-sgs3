@@ -24,10 +24,9 @@
 #include <linux/mfd/max77693.h>
 #include <linux/mfd/max77693-private.h>
 
-#define SEC_DEBUG_VIB
-
 unsigned long pwm_val = 50; /* duty in percent */
 int pwm_duty = 27787; /* duty value, 37050=100%, 27787=50%, 18525=0% */
+#define SEC_DEBUG_VIB
 
 struct max77693_haptic_data {
 	struct max77693_dev *max77693;
@@ -259,7 +258,8 @@ SAMSUNGROM{
 	/* add to avoid the glitch issue */
 	if (prev_duty != pwm_duty) {
 		prev_duty = pwm_duty;
-		pr_debug("[VIB] %s: setting pwm_duty=%d", __func__, pwm_duty);
+
+        pr_debug("[VIB] %s: setting pwm_duty=%d", __func__, pwm_duty);
 		pwm_config(g_hap_data->pwm, pwm_duty, pwm_period);
 	}
 #ifdef SEC_DEBUG_VIB
@@ -268,6 +268,7 @@ SAMSUNGROM{
 }
 EXPORT_SYMBOL(vibtonz_pwm);
 #endif
+
 static ssize_t pwm_val_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {

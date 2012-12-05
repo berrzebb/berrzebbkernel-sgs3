@@ -600,7 +600,7 @@ void battery_event_control(struct battery_info *info)
 					"VIDEO", "MUSIC", "BROWSER",
 					"HOTSPOT", "CAMERA", "DATA CALL",
 					"GPS", "LTE", "WIFI",
-					"USE", "UNKNOWN"
+					"USE", "GPU", "UNKNOWN"
 	};
 
 	pr_debug("%s\n", __func__);
@@ -988,10 +988,17 @@ static bool battery_temper_cond(struct battery_info *info)
 {
 	int ovh_stop, ovh_recover;
 	int frz_stop, frz_recover;
+#if defined(CONFIG_MACH_GC1) && defined(CONFIG_TARGET_LOCALE_USA)
+	int gpu_event = 13;
+#endif
 	pr_debug("%s\n", __func__);
 
 	/* update overheat temperature threshold */
-	if ((info->pdata->ctia_spec == true) && (info->lpm_state)) {
+if (
+#if !defined(CONFIG_MACH_T0_USA_USCC)
+		(info->pdata->ctia_spec == true) &&
+#endif
+		(info->lpm_state)) {
 		ovh_stop = info->pdata->lpm_overheat_stop_temp;
 		ovh_recover = info->pdata->lpm_overheat_recovery_temp;
 		frz_stop = info->pdata->lpm_freeze_stop_temp;
@@ -1012,6 +1019,26 @@ static bool battery_temper_cond(struct battery_info *info)
 		frz_stop = info->pdata->freeze_stop_temp;
 		frz_recover = info->pdata->freeze_recovery_temp;
 	}
+
+#if defined(CONFIG_MACH_GC1) && defined(CONFIG_TARGET_LOCALE_USA)
+	if (!info->lpm_state) {
+		if ((info->battery_temper >= info->pdata->overheat_stop_temp)
+			&& (activity_index >= 150)) {
+			ovh_stop = info->pdata->event_overheat_stop_temp;
+			info->event_type |= (1 << gpu_event);
+			pr_info("%s: set gpu(%d) event(0x%04x)\n",
+				__func__, activity_index, info->event_type);
+			battery_event_control(info);
+		} else if (info->event_type & (1 << gpu_event)) {
+			info->event_type &= ~(1 << gpu_event);
+			pr_info("%s: clear gpu(%d) event(0x%04x)\n",
+				__func__, activity_index, info->event_type);
+			battery_event_control(info);
+		} else {
+			pr_debug("%s: No set/clear gpu event case\n", __func__);
+		}
+	}
+#endif
 
 #if defined(CONFIG_MACH_T0_USA_SPR)
 	/* unver rev0.7, do not stop charging by tempereture */
@@ -1256,6 +1283,14 @@ static void battery_indicator_icon(struct battery_info *info)
 		} else if (info->recharge_phase == true) {
 			info->charge_virt_state =
 				POWER_SUPPLY_STATUS_CHARGING;
+		}
+
+		/* in case of fast charging with TA, update charge type */
+		if ((info->cable_type == POWER_SUPPLY_TYPE_MAINS) &&
+			(info->charge_type == POWER_SUPPLY_CHARGE_TYPE_FAST) &&
+			(info->input_current < info->pdata->in_curr_limit)) {
+			pr_debug("%s: slow charge state\n", __func__);
+			info->charge_type = POWER_SUPPLY_CHARGE_TYPE_SLOW;
 		}
 
 		if (info->temper_state == true) {

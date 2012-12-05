@@ -896,6 +896,7 @@ static inline int sd_power_saving_flags(void)
 
 	return 0;
 }
+
 struct sched_group_power {
 	atomic_t ref;
 	/*

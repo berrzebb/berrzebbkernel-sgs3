@@ -36,7 +36,9 @@ fw-shipped-$(CONFIG_VIDEO_S5C73M3) += SlimISP_ZK.bin \
 				      SlimISP_GK.bin
 else
 ifdef CONFIG_MACH_BAFFIN
-fw-shipped-$(CONFIG_VIDEO_S5C73M3) += SlimISP_GK.bin \
+fw-shipped-$(CONFIG_VIDEO_S5C73M3) += SlimISP_ZK.bin \
+				      SlimISP_GK.bin \
+				      SlimISP_BK.bin \
 				      SlimISP_GM.bin
 else
 ifdef CONFIG_MACH_GRANDE
