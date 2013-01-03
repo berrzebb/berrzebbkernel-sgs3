@@ -371,7 +371,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
 		   -pipe \
 		   -ffast-math \
-		   -mfpu=neon \
+		   -mfpu=vfpv3 \
 		   -march=armv7-a \
 		   -mtune=cortex-a9
 
