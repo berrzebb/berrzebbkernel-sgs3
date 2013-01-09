@@ -37,8 +37,6 @@
 #include <linux/cma.h>
 #include <linux/vmalloc.h>
 
-#include <mach/sec_debug.h>
-
 /*
  * Protects cma_regions, cma_allocators, cma_map, cma_map_length,
  * cma_kobj, cma_sysfs_regions and cma_chunks_by_start.
@@ -281,6 +279,18 @@ static LIST_HEAD(cma_regions);
 
 #define cma_foreach_region(reg) \
 	list_for_each_entry(reg, &cma_regions, list)
+
+bool cma_is_registered_region(phys_addr_t start, size_t size)
+{
+	struct cma_region *reg;
+
+	cma_foreach_region(reg) {
+		if ((start >= reg->start) &&
+			((start + size) <= (reg->start + reg->size)))
+			return true;
+	}
+	return false;
+}
 
 int __must_check cma_region_register(struct cma_region *reg)
 {

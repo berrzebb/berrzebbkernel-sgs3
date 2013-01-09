@@ -585,6 +585,13 @@ struct modem_ctl {
 	int      irq_host_wakeup;
 
 	struct delayed_work dwork;
+
+#ifdef CONFIG_EXYNOS4_CPUFREQ
+	/* cpu/bus frequency lock */
+	unsigned gpio_cpufreq_lock;
+	struct delayed_work work_cpu_lock;
+	struct delayed_work work_cpu_unlock;
+#endif
 #endif /*CONFIG_LTE_MODEM_CMC221*/
 
 	struct work_struct work;
