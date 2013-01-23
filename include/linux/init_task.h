@@ -127,7 +127,7 @@ extern struct cred init_cred;
 extern struct task_group root_task_group;
 
 #ifdef CONFIG_CGROUP_SCHED
-# define INIT_CGROUP_SCHED(tsk)						\
+# define INIT_CGROUP_SCHED(tsk)            \
 	.sched_task_group = &root_task_group,
 #else
 # define INIT_CGROUP_SCHED(tsk)

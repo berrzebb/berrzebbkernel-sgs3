@@ -131,7 +131,8 @@ static int start_this_handle(journal_t *journal, handle_t *handle,
 	}
 
 alloc_transaction:
-	if (!journal->j_running_transaction) {
+	if (!journal->j_running_transaction &&
+ 	!journal->j_barrier_count) {
 		new_transaction = kzalloc(sizeof(*new_transaction), gfp_mask);
 		if (!new_transaction) {
 			/*
