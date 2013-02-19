@@ -207,7 +207,6 @@ struct modem_ctl {
 	char *name;
 
 	int phone_state;
-	bool ramdump_active;
 
 	unsigned gpio_cp_on;
 	unsigned gpio_reset_req_n;

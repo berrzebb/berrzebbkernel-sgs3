@@ -1,0 +1,14 @@
+#!/bin/sh
+make distclean
+rm boot_$1.tar
+if [ "${2}" != "" ];then
+		cp .BerrzebbConfig_$1_$2 .config
+		./build_kernel.sh $1
+		mv boot.tar $2-boot_$1.tar
+	else 
+		cp .BerrzebbConfig_$1 .config
+		./build_kernel.sh $1
+		mv boot.tar boot_$1.tar
+
+fi
+

@@ -29,16 +29,14 @@ endif
 
 ifdef CONFIG_MACH_T0
 fw-shipped-$(CONFIG_VIDEO_S5C73M3) += SlimISP_ZK.bin \
-				     SlimISP_BK.bin \
+				      SlimISP_GK.bin
 else
 ifdef CONFIG_MACH_M3_TMO
 fw-shipped-$(CONFIG_VIDEO_S5C73M3) += SlimISP_ZK.bin \
-				      SlimISP_BK.bin \
+				      SlimISP_GK.bin
 else
 ifdef CONFIG_MACH_BAFFIN
-fw-shipped-$(CONFIG_VIDEO_S5C73M3) += SlimISP_ZK.bin \
-				      SlimISP_GK.bin \
-				      SlimISP_BK.bin \
+fw-shipped-$(CONFIG_VIDEO_S5C73M3) += SlimISP_GK.bin \
 				      SlimISP_GM.bin
 else
 ifdef CONFIG_MACH_GRANDE
@@ -217,11 +215,12 @@ endif
 
 TSPFIRMWARE_DIRECTORY_MEL_NOTE = firmware/tsp_melfas/note
 ifeq ($(shell test -d $(TSPFIRMWARE_DIRECTORY_MEL_NOTE) && echo yes),yes)
-fw-shipped-$(CONFIG_TOUCHSCREEN_MELFAS_NOTE) += tsp_melfas/note/melfas.fw
+fw-shipped-$(CONFIG_TOUCHSCREEN_MELFAS_NOTE) += tsp_melfas/note/melfasl.fw
+fw-shipped-$(CONFIG_TOUCHSCREEN_MELFAS_NOTE) += tsp_melfas/note/melfasm.fw
 fw-shipped-$(CONFIG_TOUCHSCREEN_MELFAS_NOTE) += tsp_melfas/note/BOOT.fw
 fw-shipped-$(CONFIG_TOUCHSCREEN_MELFAS_NOTE) += tsp_melfas/note/CORE.fw
-fw-shipped-$(CONFIG_TOUCHSCREEN_MELFAS_NOTE) += tsp_melfas/note/CONF.fw
-fw-shipped-$(CONFIG_TOUCHSCREEN_MELFAS_NOTE) += tsp_melfas/note/mms_boot.fw
+fw-shipped-$(CONFIG_TOUCHSCREEN_MELFAS_NOTE) += tsp_melfas/note/CONFL.fw
+fw-shipped-$(CONFIG_TOUCHSCREEN_MELFAS_NOTE) += tsp_melfas/note/CONFM.fw
 else
 $(warning '$(TSPFIRMWARE_DIRECTORY)' directory dose not exist)
 endif
