@@ -1,11 +1,7 @@
 /*
- * Author: andip71, 10.01.2013
+ * Author: andip71, 28.01.2013
  *
- * Version 1.4.3
- *
- * credits: Supercurio for ideas and partially code from his Voodoo
- * 	    sound implementation,
- *          Gokhanmoral for further modifications to the original code
+ * Version 1.4.9
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -33,7 +29,7 @@ unsigned int Boeffla_sound_hook_wm8994_write(unsigned int reg, unsigned int valu
 
 // Boeffla sound general
 #define BOEFFLA_SOUND_DEFAULT 	0
-#define BOEFFLA_SOUND_VERSION 	"1.4.3"
+#define BOEFFLA_SOUND_VERSION 	"1.4.9"
 
 // Debug mode
 #define DEBUG_DEFAULT 		1
@@ -45,7 +41,7 @@ unsigned int Boeffla_sound_hook_wm8994_write(unsigned int reg, unsigned int valu
 #define DEBUG_REGISTER_KEY 	66
 
 // EQ mode
-#define EQ_DEFAULT 		1
+#define EQ_DEFAULT 		0
 
 #define EQ_OFF			0
 #define EQ_NORMAL		1
@@ -114,15 +110,6 @@ unsigned int Boeffla_sound_hook_wm8994_write(unsigned int reg, unsigned int valu
 #define MIC_MODE_LIGHT 		3
 
 // Microphone control
-#define MIC_DEFAULT_LEFT_VALUE		267
-#define MIC_DEFAULT_RIGHT_VALUE		267
-#define MIC_DEFAULT_INPUT_MIXER_3	144
-#define MIC_DEFAULT_INPUT_MIXER_4	144
-#define MIC_DEFAULT_DRC1_1		152
-#define MIC_DEFAULT_DRC1_2		2116
-#define MIC_DEFAULT_DRC1_3		232
-#define MIC_DEFAULT_DRC1_4		528
-
 #define MIC_CONCERT_LEFT_VALUE		271
 #define MIC_CONCERT_RIGHT_VALUE		271
 #define MIC_CONCERT_INPUT_MIXER_3	32
