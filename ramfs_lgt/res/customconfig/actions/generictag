@@ -1,20 +1,21 @@
 #!/sbin/busybox sh
 
-if [ -f $3 ];then
-	FILEVAR=$2_$(basename $3)
+if [ "a$3" != "a" ];then
+	FILEVAR=$2_iosched
 
-	if [ -z $4 ]; then
-		evalcmd='eval echo \$$FILEVAR'
-		if [ "a`eval $evalcmd`" == "a" ]; then
-			eval $FILEVAR=`cat $3`
-			echo $FILEVAR=`cat $3` >> $DEFAULT_PROFILE
-		fi
-	else
-		if [ "$CONTROLSWITCH_$2" == "on" -o "$CONFIG_BOOTED" == true ]; then
-			echo $4 > $3
-		fi
-		eval $FILEVAR=`cat $3`
-	fi
-
-	eval echo \$$FILEVAR
+if [ "a$4" == "a" ];then
+  evalcmd='eval "echo \$$FILEVAR"'
+  if [ "a`eval $evalcmd`" == "a" ]; then
+    eval $FILEVAR=`cat $3`
+  fi
+  eval $evalcmd
+else
+  evalcmd='eval "$FILEVAR=$4"'
+  eval $evalcmd
+  evalcmd='eval "echo \$$FILEVAR"'
+  eval $evalcmd
+  if [ -f $3 ];then
+    echo $4 > $3
+  fi
+fi
 fi

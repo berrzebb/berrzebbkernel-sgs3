@@ -378,12 +378,12 @@ done
       </spinner>
       <seekBar  description="The read-ahead value on the internal phone memory." 
                 name="Internal storage read-ahead" 
-                action="generic /sys/block/mmcblk0/queue/read_ahead_kb"
+                action="generictag INTERNAL /sys/block/mmcblk0/queue/read_ahead_kb"
                 unit="kB" min="128" reversed="false" step="128" max="2048"/>
 
       <seekBar  description="The read-ahead value on the external SD card." 
                 name="SD card read-ahead" 
-                action="generic /sys/block/mmcblk1/queue/read_ahead_kb"
+                action="generictag SD /sys/block/mmcblk1/queue/read_ahead_kb"
                 unit="kB" min="128" reversed="false" step="128" max="2048"/>
 
     </settingsPane>

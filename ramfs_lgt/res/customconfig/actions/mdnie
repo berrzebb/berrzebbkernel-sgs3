@@ -78,6 +78,75 @@ _CS_weight_tune_natural_vt=18
 _CS_weight_tune_camera=12
 _CS_weight_tune_camera_outdoor=12
 
+if [ -z $3 ]; then
+	case "$2" in
+		DITHER_DELTA)
+			if [ -z $DITHER_DELTA ]; then
+				DITHER_DELTA=-4
+			fi
+			;;
+		DE_DELTA)
+			if [ -z $DE_DELTA ]; then
+				DE_DELTA=0
+			fi
+			;;
+		DE_KILL)
+			if [ -z $DE_KILL ]; then
+				DE_KILL=1
+			fi
+			;;
+		DE_MIN)
+			if [ -z $DE_MIN ]; then
+				DE_MIN=1
+			fi
+			;;
+		DE_MAX)
+			if [ -z $DE_MAX ]; then
+				DE_MAX=128
+			fi
+			;;
+
+	esac
+
+	if [ $2 == "CS_WEIGHT_DELTA" -o $2 == "CS_GREY_DELTA" ]; then
+		if [ "a" == "a$CS_GREY_DELTA" ]; then
+			CS_GREY_DELTA=0
+		fi
+		if [ "a" == "a$CS_WEIGHT_DELTA" ]; then
+			CS_WEIGHT_DELTA=0
+		fi
+	fi
+
+	if [ $2 == "CS_HG_RY_DELTA" -o $2 == "CS_RY_DELTA" ]; then
+		if [ "a" == "a$CS_HG_RY_DELTA" ]; then
+			CS_HG_RY_DELTA=0
+		fi
+
+		if [ "a" == "a$CS_RY_DELTA" ]; then
+			CS_RY_DELTA=0
+		fi
+	fi
+
+	if [ $2 == "CS_HG_GC_DELTA" -o $2 == "CS_GC_DELTA" ]; then
+		if [ "a" == "a$CS_HG_GC_DELTA" ]; then
+			CS_HG_GC_DELTA=0
+		fi
+
+		if [ "a" == "a$CS_GC_DELTA" ]; then
+			CS_GC_DELTA=0
+		fi
+	fi
+
+	if [ $2 == "CS_HG_BM_DELTA" -o $2 == "CS_BM_DELTA" ]; then
+		if [ "a" == "a$CS_HG_BM_DELTA" ]; then
+			CS_HG_BM_DELTA=0
+		fi
+
+		if [ "a" == "a$CS_BM_DELTA" ]; then
+			CS_BM_DELTA=0
+		fi
+	fi
+else
 	if [ $2 == "DITHER_DELTA" ]; then
 		DITHER_DELTA=$3
 
