@@ -55,6 +55,7 @@ insecure_adbd=on
 cfs_tweaks=0
 max_cpu_lock=0
 default_stats=off
+mdnie_shortcut_enabled=on
 touch_boost_level=10
 fbearlysuspend_delay0=0
 led_fade=-1
