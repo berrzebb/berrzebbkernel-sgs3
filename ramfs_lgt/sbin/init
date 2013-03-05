@@ -167,8 +167,8 @@ insmod /lib/modules/cpufreq_lulzactiveq.ko
 # additional I/O schedulers
 insmod /lib/modules/sio-iosched.ko
 insmod /lib/modules/vr-iosched.ko
-# audio enhancements
-insmod /lib/modules/kscoobydoo.ko devicename=scoobydoo_sound
+# Boeffla Sound
+. /sbin/ext/boeffla-sound.inc
 
 exec /sbin/init2
 
