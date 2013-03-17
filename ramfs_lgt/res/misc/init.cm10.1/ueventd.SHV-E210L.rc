@@ -83,7 +83,6 @@
 /dev/usb/lp*              0660   system     usb
 /dev/block/mmcblk0p4	  0660	 system	    radio
 /dev/block/mmcblk0p7	  0660	 system	    radio
-/dev/block/mmcblk0p8	  0660	 system	    radio
 
 /dev/ttySAC*	          0660	 root	    system
 /dev/umts*                0660   system     radio

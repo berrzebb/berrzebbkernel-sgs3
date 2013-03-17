@@ -75,6 +75,27 @@ on post-fs-data
     chmod 0644 /efs/redata.bin
     chmod 0644 /efs/h2k.dat
 
+# MOBILE OFFICE Permanent memory access
+    mkdir /efs/security 0771 root root
+    chown radio system /efs/security
+    chmod 0771 /efs/security
+
+# LGT contents directory
+    mkdir /data/data/com.ubivelox.wipiplayer/W 0770 system lgt_gid
+    mkdir /data/LGTContents 0770 system lgt_gid
+    mkdir /data/LGTContents/video 0770 system lgt_gid
+    mkdir /data/LGTContents/music 0770 system lgt_gid
+    mkdir /data/LGTContents/bell 0770 system lgt_gid
+    mkdir /data/LGTContents/app 0770 system lgt_gid
+    mkdir /data/LGTContents/DLtmp 0770 system lgt_gid
+    chown system lgt_gid /data/data/com.ubivelox.wipiplayer/W
+    chown system lgt_gid /data/LGTContents
+    chown system lgt_gid /data/LGTContents/video
+    chown system lgt_gid /data/LGTContents/music
+    chown system lgt_gid /data/LGTContents/bell
+    chown system lgt_gid /data/LGTContents/app
+    chown system lgt_gid /data/LGTContents/DLtmp
+
 # Camera firmware
 	mkdir /data/cfw 0775 system system
     chown system media /data/cfw/SlimISP_GD.bin
@@ -414,6 +435,9 @@ service sec_keyboard /system/bin/sec_keyboard /dev/ttySAC2
 on property:ro.uart_debug=0
 	start sec_keyboard
 
+# for LGU I-WLAN
+    insmod /lib/modules/mwlan_aarp.ko
+
 # create virtual SD card at /mnt/sdcard, based on the /data/media directory
 # daemon will drop to user/group system/media_rw after initializing
 # underlying files in /data/media wil be created with user and group media_rw (1023)
@@ -421,16 +445,33 @@ service sdcard /system/bin/sdcard /data/media /mnt/shell/emulated 1023 1023
     class late_start
 
 # icd
+service cbd-lte /sbin/cbd -d -t cmc221 -b d -m d
+    class main
+    user root
+    group radio cache inet misc audio sdcard_rw log
+
+service cbd-cdma /sbin/cbd -d -t cbp72 -b u -m d
+    class main
+    user root
+    group radio cache inet misc audio sdcard_rw log
+
 service icd /system/bin/icd
     class main
     user system
     group system log
     onrestart exec icd_check
 
-service cpboot-daemon /sbin/cbd -d
+# RILD
+service ril-daemon /system/bin/rild
     class main
+    socket rild stream 660 root radio
+    socket rild-debug stream 660 radio system
     user root
     group radio cache inet misc audio sdcard_rw log
+    onrestart restart cbd-lte
+    onrestart restart cbd-cdma
+
+    
 
 service p2p_supplicant /system/bin/wpa_supplicant \
     -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf -N \

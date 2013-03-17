@@ -19,7 +19,7 @@ on early-init
     mkdir /mnt 0775 root system
 
 
-
+    
 on init
 
 sysclktz 0
@@ -199,7 +199,7 @@ on post-fs-data
     mkdir /data/property 0700 root root
     mkdir /data/ssh 0750 root shell
     mkdir /data/ssh/empty 0700 root root
-
+    
     # SA, System SW, SAMSUNG create log directory
     mkdir /data/log 0775 system log
     chown system log /data/log
@@ -242,13 +242,13 @@ on post-fs-data
 
 #[ SEC_MM_DRM
 
-    # [ save OMA DB, when upgrading from GB to ICS
+    # [ save OMA DB, when upgrading from GB to ICS    
     mkdir /data/system/databases 0771 system system
     copy /data/data/com.sec.android.providers.drm/databases/drmdatabase.db /data/system/databases/drmdatabase.db
     chown system system /data/system/databases/drmdatabase.db
-    chmod 0774 /data/system/databases/drmdatabase.db
+    chmod 0774 /data/system/databases/drmdatabase.db	
     # ]
-
+    
     # DRM directory creation
     mkdir /system/etc/security/.drm 0775
     chown root root /system/etc/security/.drm
@@ -355,7 +355,6 @@ on boot
     chown radio system /sys/devices/system/cpu/cpufreq/pegasusq/min_cpu_lock
     chown radio system /sys/devices/system/cpu/cpufreq/pegasusq/hotplug_lock
     chown radio system /sys/devices/system/cpu/busfreq/curr_freq
-	chown radio system /sys/devices/system/cpu/busfreq/dmc_max_threshold
     chown radio system /sys/module/mali/parameters/mali_dvfs_control
     chown system radio /sys/bus/platform/devices/s5p-tmu/lot_id
     chmod 0660 /sys/power/cpufreq_table
@@ -368,7 +367,6 @@ on boot
     chmod 0660 /sys/devices/system/cpu/cpufreq/pegasusq/min_cpu_lock
     chmod 0660 /sys/devices/system/cpu/cpufreq/pegasusq/hotplug_lock
     chmod 0660 /sys/devices/system/cpu/busfreq/curr_freq
-	chmod 0660 /sys/devices/system/cpu/busfreq/dmc_max_threshold
     chmod 0660 /sys/module/mali/parameters/mali_dvfs_control
     chmod 0664 /sys/bus/platform/devices/s5p-tmu/lot_id
 
@@ -423,7 +421,7 @@ on boot
     chown system radio /sys/class/audio/earjack/select_jack
     chown system radio /sys/class/audio/earjack/key_state
     chown system radio /sys/class/audio/earjack/state
-    chown media system /sys/class/audio/earjack/reselect_jack
+    chown media system /sys/class/audio/earjack/reselect_jack 
 
 # Battery node
     chown system radio /sys/class/power_supply/battery/batt_charging_source
@@ -514,10 +512,6 @@ on boot
     chown system radio /sys/class/camera/flash/rear_flash
     chown radio system /sys/devices/platform/samsung-pd.5/s3c-fimc.2/range_mode
     chmod 0660 /sys/devices/platform/samsung-pd.5/s3c-fimc.2/range_mode
-
-# Switch Device
-    chown system radio /sys/class/sec/switch/uart_sel
-    chown system radio /sys/class/sec/switch/usb_sel
 
 # Permissions for SVC LED
 	chown system system /sys/class/sec/led/led_r
@@ -668,6 +662,10 @@ service adbd /sbin/adbd
 on property:ro.kernel.qemu=1
     start adbd
 
+
+
+
+
 service servicemanager /system/bin/servicemanager
     class core
     user system
@@ -728,9 +726,6 @@ service surfaceflinger /system/bin/surfaceflinger
     user system
     group graphics
     onrestart restart zygote
-    onrestart restart media
-    onrestart restart netd
-    onrestart restart gsiff_daemon
 
 service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server
     class main
@@ -740,7 +735,7 @@ service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-sys
     onrestart restart media
     onrestart restart netd
     onrestart restart gsiff_daemon
-
+    
 service drm /system/bin/drmserver
     class main
     user drm
@@ -756,7 +751,7 @@ service media /system/bin/mediaserver
     user media
     group system audio camera inet net_bt net_bt_admin net_bw_acct drmrpc sdcard_rw sdcard_r skt lgt_gid media_rw
 	ioprio rt 4
-
+	
 service powersnd /system/bin/samsungpowersoundplay
     class main
     user media
@@ -887,6 +882,7 @@ on property:ro.dumpstate.dmesg=1
 on property:init.svc.media=restarting
     exec icd_check
     start icd
+
 service postinit /sbin/ext/post-init.sh
 	class core
 	user root

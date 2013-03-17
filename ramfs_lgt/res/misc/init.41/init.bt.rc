@@ -11,7 +11,7 @@ service poke_helper /system/bin/brcm_poke_helper /dev/ttySAC0
 
 service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --no2bytes --tosleep 50000 \
 	--baudrate 4000000 --use_baudrate_for_download --patchram /system/bin/bcm4334.hcd \
-	--scopcm=0,0,0,0,0,0,0,3,3,0  /dev/ttySAC0
+	--i2s=1,0,0,0  /dev/ttySAC0
     class main
     user bluetooth
     group bluetooth net_bt_admin
@@ -20,7 +20,7 @@ service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --no2
 
 service hciattach_le /system/bin/brcm_patchram_plus --enable_hci --no2bytes --tosleep 50000 \
 	--baudrate 115200 --use_baudrate_for_download --patchram /system/bin/bcm4334.hcd \
-	--scopcm=0,0,0,0,0,0,0,3,3,0  /dev/ttySAC0
+	--i2s=1,0,0,0  /dev/ttySAC0
     class main
     user bluetooth
     group bluetooth net_bt_admin

@@ -1,7 +1,7 @@
 #!/sbin/busybox sh
 
 if [ -f /system/xbin/su ];then
-  mount -o remount,rw /dev/block/mmcblk0p9 /system > /dev/null 2>&1
+  mount -o remount,rw /dev/block/mmcblk0p10 /system > /dev/null 2>&1
   rm -f /system/bin/su > /dev/null 2>&1
   rm -f /system/xbin/su > /dev/null 2>&1
   # some roms have a busybox with su applet
@@ -13,7 +13,7 @@ if [ -f /system/xbin/su ];then
   rm -rf /data/dalvik-cache/*uper?ser.apk* > /dev/null 2>&1
   rm -f /system/app/*uper?ser.apk > /dev/null 2>&1
   rm -f /data/app/*uper?ser.apk > /dev/null 2>&1
-  mount -o remount,ro /dev/block/mmcblk0p9 /system > /dev/null 2>&1
+  mount -o remount,ro /dev/block/mmcblk0p10 /system > /dev/null 2>&1
   # run reinstall-helper
   #/sbin/busybox sh /sbin/ext/su-helper.sh
   echo Root removed. The apps which require root, including this app, will have limited functionality.

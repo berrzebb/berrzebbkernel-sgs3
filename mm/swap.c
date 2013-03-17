@@ -382,12 +382,6 @@ void ____lru_cache_add(struct page *page, enum lru_list lru, int tail)
 	if (!pagevec_add(pvec, page))
 		______pagevec_lru_add(pvec, lru, tail);
 	put_cpu_var(lru_add_pvecs);
-EXPORT_SYMBOL(____lru_cache_add);
-
-void __lru_cache_add(struct page *page, enum lru_list lru)
-{
-	____lru_cache_add(page, lru, 0);
-}
 #else
 	struct pagevec *pvec;
 	int is_cma;
@@ -399,12 +393,17 @@ void __lru_cache_add(struct page *page, enum lru_list lru)
 
 	page_cache_get(page);
 	if (!pagevec_add(pvec, page) || is_cma)
-		____pagevec_lru_add(pvec, lru);
+		______pagevec_lru_add(pvec, lru, tail);
 	put_cpu_var(lru_add_pvecs);
 #endif
 }
-EXPORT_SYMBOL(__lru_cache_add);
+EXPORT_SYMBOL(____lru_cache_add);
 
+void __lru_cache_add(struct page *page, enum lru_list lru)
+{
+	____lru_cache_add(page, lru, 0);
+}
+EXPORT_SYMBOL(__lru_cache_add);
 /**
  * lru_cache_add_lru - add a page to a page list
  * @page: the page to be added to the LRU.
