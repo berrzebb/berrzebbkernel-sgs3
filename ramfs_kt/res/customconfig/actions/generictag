@@ -1,0 +1,21 @@
+#!/sbin/busybox sh
+
+if [ "a$3" != "a" ];then
+	FILEVAR=$2_iosched
+
+if [ "a$4" == "a" ];then
+  evalcmd='eval "echo \$$FILEVAR"'
+  if [ "a`eval $evalcmd`" == "a" ]; then
+    eval $FILEVAR=`cat $3`
+  fi
+  eval $evalcmd
+else
+  evalcmd='eval "$FILEVAR=$4"'
+  eval $evalcmd
+  evalcmd='eval "echo \$$FILEVAR"'
+  eval $evalcmd
+  if [ -f $3 ];then
+    echo $4 > $3
+  fi
+fi
+fi

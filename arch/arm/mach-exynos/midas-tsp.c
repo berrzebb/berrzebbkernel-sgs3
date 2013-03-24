@@ -2413,10 +2413,10 @@ void midas_tsp_request_qos(void *data)
 	/* Guarantee that the bus runs at >= 266MHz */
 	if (!pm_qos_request_active(&busfreq_qos))
 		pm_qos_add_request(&busfreq_qos, PM_QOS_BUS_DMA_THROUGHPUT,
-				   266000);
+				   266160);
 	else {
 		cancel_delayed_work_sync(&busqos_work);
-		pm_qos_update_request(&busfreq_qos, 266000);
+		pm_qos_update_request(&busfreq_qos, 266160);
 	}
 
 	/* Cancel the QoS request after 1/10 sec */
