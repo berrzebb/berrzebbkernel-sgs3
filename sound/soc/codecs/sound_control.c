@@ -458,6 +458,7 @@ static unsigned int wm8994_read(struct snd_soc_codec *codec,
 
 static bool check_for_call(bool load_register, unsigned int val)
 {
+#ifdef CONFIG_SND_SOC_SAMSUNG_MIDAS_WM1811
 	// if a check outside the write hook should be performed, the current register
 	// value needs to be loaded first
 	if (load_register)
@@ -466,6 +467,7 @@ static bool check_for_call(bool load_register, unsigned int val)
 	// check via register WM8994_AIF2DACR if currently call active
 	if (!(val & WM8994_AIF2DACR_SRC_MASK))
 		return true;
+#endif
 
 	return false;
 }
@@ -483,7 +485,18 @@ static bool check_for_socket(unsigned int val)
 
 static bool check_for_headphone(void)
 {
-	return (switch_get_state(&android_switch) > 0);
+	// check status of micdet zero jacket to find out whether headphone
+	// or headset is currently connected
+	// Note: This always shows status delayed after something has been plugged in or
+	// unplugged !!!
+	if( wm8994->micdet[0].jack != NULL )
+	{
+		if ((wm8994->micdet[0].jack->status & SND_JACK_HEADPHONE) ||
+		(wm8994->micdet[0].jack->status & SND_JACK_HEADSET))
+			return true;
+	}
+
+	return false;
 }
 
 
@@ -1599,7 +1612,7 @@ static ssize_t store_sound_property(struct device *dev,
 		case EQ_HP_BAND_4:
 		case EQ_HP_BAND_5:
 			for(t = 0; t < 4; t++)
-				eq_bands[EQ_HP][4 - (EQ_HP_GAIN_5 - offset)][t] = in[t];
+				eq_bands[EQ_HP][4 - (EQ_HP_BAND_5 - offset)][t] = in[t];
 
 			set_eq_bands();
 			break;
@@ -1610,7 +1623,7 @@ static ssize_t store_sound_property(struct device *dev,
 		case EQ_SP_BAND_4:
 		case EQ_SP_BAND_5:
 			for(t = 0; t < 4; t++)
-				eq_bands[EQ_SP][4 - (EQ_SP_GAIN_5 - offset)][t] = in[t];
+				eq_bands[EQ_SP][4 - (EQ_SP_BAND_5 - offset)][t] = in[t];
 
 			set_eq_bands();
 			break;
