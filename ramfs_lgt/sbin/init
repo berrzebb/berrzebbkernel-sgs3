@@ -114,16 +114,17 @@ fi
 MIUI=0
 CM10=0
 CM101=0
+SAMMY42=0
 
 [ -f /system/framework/miui-framework.jar ] && MIUI=1
 [ -f /system/framework/seccamera.jar ] || CM10=1
 [ -f /system/framework/framework2.jar ] || CM101=1
-
+[ -f /system/framework/telephony-common.jar ] && SAMMY42=1
 
 if [ "$CM101" == 1 ];
 then
-  echo 3 > /proc/sys/kernel/rom_feature_set
-  mv -f /lib/modules/dhd_cm.ko /lib/modules/dhd.ko
+  echo 7 > /proc/sys/kernel/rom_feature_set
+#  mv -f /lib/modules/dhd_cm.ko /lib/modules/dhd.ko
   mv -f /res/misc/init.cm10.1/* /
 else
   if [ "$CM10" == 1 ];
@@ -132,8 +133,14 @@ else
     mv -f /lib/modules/dhd_cm.ko /lib/modules/dhd.ko
     mv -f /res/misc/init.cm10/* /
   else
-    echo 2 > /proc/sys/kernel/rom_feature_set
-    mv -f /res/misc/init.41/* /
+    if [ "$SAMMY42" == 1 ];
+    then
+      echo 6 > /proc/sys/kernel/rom_feature_set
+      mv -f /res/misc/init.42/* /
+    else
+      echo 2 > /proc/sys/kernel/rom_feature_set
+      mv -f /res/misc/init.41/* /
+    fi
   fi
 fi
 

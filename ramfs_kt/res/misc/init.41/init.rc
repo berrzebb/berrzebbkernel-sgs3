@@ -594,13 +594,24 @@ on boot
     chown system system /sys/class/lmk/lowmemorykiller/lmk_state
     chmod 0664 /sys/block/zram0/disksize
     chown system system /sys/block/zram0/disksize
-    write /sys/block/zram0/disksize 209715200
+    write /sys/block/zram0/disksize 524288000
     chmod 0664 /sys/block/zram0/initstate
     chown system system /sys/block/zram0/initstate
-#
-# Disabled by Yank555.lu - Prepare zram for swap but don't activate it yet
-#
-#   write /sys/block/zram0/initstate 1
+    write /sys/block/zram0/initstate 1
+    mkdir /dev/memcgrp 
+    mount cgroup none /dev/memcgrp memory
+    chmod 0700 /dev/memcgrp
+    chown system system /dev/memcgrp
+    mkdir /dev/memcgrp/hidden
+    chmod 0700 /dev/memcgrp/hidden
+    chown system system /dev/memcgrp/hidden
+    chown system system /dev/memcgrp/tasks
+    chown system system /dev/memcgrp/hidden/tasks
+    chmod 0600 /dev/memcgrp/tasks
+    chmod 0600 /dev/memcgrp/hidden/tasks
+    write /dev/memcgrp/hidden/memory.swappiness 100
+    write /dev/memcgrp/hidden/memory.soft_limit_in_bytes 0
+    write /proc/sys/vm/page-cluster 1
 
 on nonencrypted
     class_start late_start
@@ -724,7 +735,7 @@ service mobex-daemon /system/bin/npsmobex
 service surfaceflinger /system/bin/surfaceflinger
     class main
     user system
-    group graphics
+    group system graphics
     onrestart restart zygote
 
 service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server
@@ -802,6 +813,10 @@ service iprenew_bnep0 /system/bin/dhcpcd -n
 service installd /system/bin/installd
     class main
     socket installd stream 600 system system
+
+#service flash_recovery /system/etc/install-recovery.sh
+#    class main
+#    oneshot
 
 service racoon /system/bin/racoon
     class main

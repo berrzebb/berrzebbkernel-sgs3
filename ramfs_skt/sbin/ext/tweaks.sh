@@ -6,6 +6,9 @@ do
 mount -o remount,noatime,nodiratime,noauto_da_alloc,barrier=0 $k
 done;
 
+echo 256 > /sys/block/mmcblk0/bdi/read_ahead_kb
+echo 512 > /sys/block/mmcblk1/bdi/read_ahead_kb
+
 #enable kmem interface for everyone
 echo 0 > /proc/sys/kernel/kptr_restrict
 
@@ -21,6 +24,9 @@ cat /proc/version | grep infra && (kmemhelper -t string -n linux_proc_banner -o 
 # "...by keeping the group of tasks on a single cpu package...
 # "...facilitating cache sharing and reduced off-chip traffic"
 echo 2 > /sys/devices/system/cpu/sched_mc_power_savings
+
+# enable AFTR
+echo 3 > /sys/module/cpuidle_exynos4/parameters/enable_mask
 
 # pegasusq tweaks
 echo 20000 > /sys/devices/system/cpu/cpufreq/pegasusq/sampling_rate
